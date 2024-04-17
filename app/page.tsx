@@ -6,6 +6,9 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1>HOME</h1>
       <SignInButton />
+      <div className="pt-16 text-xs text-neutral-400">
+        &copy; Ultrasound Korea, GE Healthcare
+      </div>
     </main>
   );
 }
