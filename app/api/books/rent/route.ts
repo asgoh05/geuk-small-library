@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import Book from "@/app/(models)/Book";
-import { messaging } from "firebase-admin";
 
 // 사용자가 이미 대여한 책이 있는지 확인
 // e.g. http://localhost:3000//api/books/rent?email=asgoh05@gmail.com
