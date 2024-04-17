@@ -1,14 +1,20 @@
 import Image from "next/image";
-import SignInButton from "./components/SignInButton";
+import { IBook } from "./(models)/Book";
+import MainPage from "./components/MainPage";
 
-export default function Home() {
+export default async function Home() {
+  const books: IBook[] = await fetchBooks();
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>HOME</h1>
-      <SignInButton />
-      <div className="pt-16 text-xs text-neutral-400">
-        &copy; Ultrasound Korea, GE Healthcare
-      </div>
-    </main>
+    <div>
+      <MainPage books={books} />
+    </div>
   );
+}
+
+export async function fetchBooks() {
+  const res = await fetch(`${process.env.HOME_URL}/api/books`, {
+    cache: "no-store",
+  });
+  const books = await res.json();
+  return books;
 }
