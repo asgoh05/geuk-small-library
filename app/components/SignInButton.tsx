@@ -7,5 +7,12 @@ export default function SignInButton() {
   if (session && session.user) {
     return <button onClick={() => signOut()}>로그아웃</button>;
   }
-  return <button onClick={() => signIn()}>로그인</button>;
+  return (
+    <button
+      className="border p-2 rounded-lg"
+      onClick={() => signIn("google", { callbackUrl: "/" })}
+    >
+      Google 계정으로 로그인
+    </button>
+  );
 }
