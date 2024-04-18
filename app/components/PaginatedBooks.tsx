@@ -15,7 +15,7 @@ export default function PaginatedBooks({
 }: PaginatedBooksProps) {
   const [curPage, setCurPage] = useState(1);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
   const pageCount =
     Math.ceil(books.length / itemsPerPage) === 0
       ? 1
