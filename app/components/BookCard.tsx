@@ -66,9 +66,9 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
   return (
     <div className="w-full rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100">
       <div className="px-6 py-4">
-        <div className="flex items-baseline">
-          <p className="font-bold mb-2">{book.title}&nbsp;&nbsp;</p>
-          <p className="text-gray-500 text-xs">{book.author}</p>
+        <div className="flex items-center">
+          <p className="font-bold mb-2 max-w-60">{book.title}&nbsp;&nbsp;</p>
+          <p className="text-gray-500 text-xs pl-4">{book.author}</p>
         </div>
         <p className="text-gray-500 text-xs">{book.manage_id}</p>
       </div>
