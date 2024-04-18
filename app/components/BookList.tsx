@@ -7,7 +7,8 @@ import PaginatedBooks from "./PaginatedBooks";
 
 export default function BookList() {
   const { data: session } = useSession();
-  const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
+  // const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
+  const [manageId, setManageId] = useState("");
   const [books, setBooks] = useState<IBook[]>([]);
   const [searchKey, setSearchKey] = useState("");
   const [isLoading, setLoading] = useState(true);
@@ -30,19 +31,19 @@ export default function BookList() {
   }, [books, session]);
 
   function searchById(bookid: string) {
-    const manage_id = `GEUK_BOOK_${bookid}`;
-    setFilteredBooks(
-      books.filter((book) => book.manage_id.includes(manage_id))
-    );
-    setSearchKey("");
+    setManageId(`GEUK_BOOK_${bookid}`);
+    // setFilteredBooks(
+    //   books.filter((book) => book.manage_id.includes(`GEUK_BOOK_${bookid}`))
+    // );
+    // setSearchKey("");
   }
 
   function searchByKeyword(e: BaseSyntheticEvent) {
-    e.preventDefault();
+    // e.preventDefault();
     setSearchKey(e.target.value);
-    setFilteredBooks(
-      books.filter((book) => book.title.includes(e.target.value))
-    );
+    // setFilteredBooks(
+    //   books.filter((book) => book.title.includes(e.target.value))
+    // );
   }
   return (
     <div>
@@ -65,7 +66,7 @@ export default function BookList() {
         <FourDigitInput id="fourDigitInput" onValueChanged={searchById} />
       </div>
       <div className="flex items-center justify-start pb-2">
-        <p className="text-sm">책이름 검색: &nbsp;</p>
+        <p className="text-sm">책 이름: &nbsp;</p>
         <input
           type="text"
           className="w-auto border border-neutral-200 rounded indent-1"
@@ -88,7 +89,11 @@ export default function BookList() {
             );
           })} */}
           <PaginatedBooks
-            books={filteredBooks.length === 0 ? books : filteredBooks}
+            books={books.filter(
+              (book) =>
+                book.manage_id.includes(manageId) &&
+                book.title.includes(searchKey)
+            )}
             userRentalBook={userRentalBook}
           />
         </div>
