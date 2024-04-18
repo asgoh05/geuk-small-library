@@ -1,17 +1,34 @@
-import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
 import BookCard from "./BookCard";
 import FourDigitInput from "./FourDigitInput";
-import { BaseSyntheticEvent, useState } from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
-interface BookListProps {
-  books: IBook[];
-}
-
-export default function BookList({ books }: BookListProps) {
+export default function BookList() {
   const { data: session } = useSession();
-  const [filteredBooks, setFilteredBooks] = useState<IBook[]>(books);
+  const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
+  const [books, setBooks] = useState<IBook[]>([]);
   const [searchKey, setSearchKey] = useState("");
+  const [isLoading, setLoading] = useState(true);
+  const [userRentalBook, setUserRentalBook] = useState<IBook | null>(null);
+
+  useEffect(() => {
+    fetch("/api/books")
+      .then((res) => res.json())
+      .then((books: IBook[]) => {
+        setBooks(books);
+        setFilteredBooks(books);
+        setSearchKey("");
+        setLoading(false);
+
+        const rentalBook = books.find(
+          (book: IBook) =>
+            !book.rental_info.rent_available &&
+            book.rental_info.user_email === session?.user?.email
+        );
+        setUserRentalBook(rentalBook ?? null);
+      });
+  }, [books, session]);
 
   function searchById(bookid: string) {
     if (bookid === "") {
@@ -34,6 +51,19 @@ export default function BookList({ books }: BookListProps) {
   }
   return (
     <div>
+      {userRentalBook == null ? (
+        ""
+      ) : (
+        <div className="overflow-visible">
+          <p className="text-xs absolute rounded-e-full bg-red-600 text-white px-1">
+            대여중
+          </p>
+          <BookCard
+            book={userRentalBook}
+            hasRentalBook={userRentalBook != null}
+          />
+        </div>
+      )}
       <div className="flex items-center justify-start py-2">
         <p className="text-sm">도서번호로 검색: &nbsp;</p>
         <p className="text-neutral-500 text-sm align-bottom pr-1">GEUK_BOOK_</p>
@@ -49,15 +79,21 @@ export default function BookList({ books }: BookListProps) {
         />
       </div>
 
-      <ul>
-        {filteredBooks.map((book) => {
-          return (
-            <li key={book._id}>
-              <BookCard book={book} />
-            </li>
-          );
-        })}
-      </ul>
+      {isLoading ? (
+        <div className="flex flex-col h-screen justify-center pb-30">
+          <p className="text-center h-1/2">Loading...</p>
+        </div>
+      ) : (
+        <ul>
+          {filteredBooks.map((book) => {
+            return (
+              <li key={book._id}>
+                <BookCard book={book} hasRentalBook={userRentalBook !== null} />
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

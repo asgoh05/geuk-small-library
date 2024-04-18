@@ -1,10 +1,68 @@
+import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
+import { useRouter } from "next/navigation";
 
 interface BookCardProps {
+  hasRentalBook: boolean;
   book: IBook;
 }
 
-export default function BookCard({ book }: BookCardProps) {
+export default function BookCard({ book, hasRentalBook }: BookCardProps) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  async function returnBook() {
+    if (confirm(`책 "${book.title}"을 반납하시겠습니까?`)) {
+      try {
+        const res = await fetch(`api/books/return/${book.manage_id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            return_date: Date.now(),
+            user_name: session?.user?.name,
+            user_email: session?.user?.email,
+          }),
+        });
+        if (res.status === 200) {
+          alert("반납을 완료하였습니다");
+        } else {
+          alert(
+            `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
+          );
+        }
+      } catch (err) {
+        alert("서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown");
+      } finally {
+        router.push("/");
+      }
+    } else return;
+  }
+
+  async function rentBook() {
+    if (confirm(`책 "${book.title}"을 대여하시겠습니까?`)) {
+      try {
+        const res = await fetch(`api/books/rent/${book.manage_id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            rent_date: Date.now(),
+            user_name: session?.user?.name,
+            user_email: session?.user?.email,
+          }),
+        });
+        if (res.status === 200) {
+          alert("대여를 완료하였습니다");
+        } else {
+          alert(
+            `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
+          );
+        }
+      } catch (err) {
+        alert("서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown");
+      } finally {
+        router.push("/");
+      }
+    } else return;
+  }
+
   return (
     <div className="max-w-md rounded-lg overflow-hidden shadow-md border my-1 hover:bg-neutral-100">
       <div className="px-6 py-4">
@@ -25,9 +83,27 @@ export default function BookCard({ book }: BookCardProps) {
           </span>
         )}
 
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">
-          대여하기
-        </span>
+        {hasRentalBook &&
+        book.rental_info.user_email === session?.user?.email ? (
+          <span
+            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2"
+            onClick={returnBook}
+          >
+            반납하기
+          </span>
+        ) : hasRentalBook ? (
+          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2">
+            대여하기
+          </span>
+        ) : (
+          <span
+            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2"
+            onClick={rentBook}
+          >
+            대여하기
+          </span>
+        )}
+
         <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">
           상세정보
         </span>
