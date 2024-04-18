@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
 import { useRouter } from "next/navigation";
 
-interface BookCardProps {
+export interface BookCardProps {
   hasRentalBook: boolean;
   book: IBook;
 }

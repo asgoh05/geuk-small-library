@@ -3,6 +3,7 @@ import BookCard from "./BookCard";
 import FourDigitInput from "./FourDigitInput";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import PaginatedBooks from "./PaginatedBooks";
 
 export default function BookList() {
   const { data: session } = useSession();
@@ -29,10 +30,6 @@ export default function BookList() {
   }, [books, session]);
 
   function searchById(bookid: string) {
-    if (bookid === "") {
-      setFilteredBooks(books);
-      return;
-    }
     const manage_id = `GEUK_BOOK_${bookid}`;
     setFilteredBooks(
       books.filter((book) => book.manage_id.includes(manage_id))
@@ -82,14 +79,18 @@ export default function BookList() {
           <p className="text-center h-1/2">Loading...</p>
         </div>
       ) : (
-        <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center">
-          {filteredBooks.map((book) => {
+        <div>
+          {/* {filteredBooks.map((book) => {
             return (
               <div key={book._id} className="max-w-sm w-full m-1">
                 <BookCard book={book} hasRentalBook={userRentalBook !== null} />
               </div>
             );
-          })}
+          })} */}
+          <PaginatedBooks
+            books={filteredBooks.length === 0 ? books : filteredBooks}
+            userRentalBook={userRentalBook}
+          />
         </div>
       )}
     </div>
