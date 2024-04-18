@@ -17,8 +17,6 @@ export default function BookList() {
       .then((res) => res.json())
       .then((books: IBook[]) => {
         setBooks(books);
-        setFilteredBooks(books);
-        setSearchKey("");
         setLoading(false);
 
         const rentalBook = books.find(
@@ -54,7 +52,7 @@ export default function BookList() {
       {userRentalBook == null ? (
         ""
       ) : (
-        <div className="overflow-visible">
+        <div>
           <p className="text-xs absolute rounded-e-full bg-red-600 text-white px-1">
             대여중
           </p>
@@ -84,15 +82,15 @@ export default function BookList() {
           <p className="text-center h-1/2">Loading...</p>
         </div>
       ) : (
-        <ul>
+        <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center">
           {filteredBooks.map((book) => {
             return (
-              <li key={book._id}>
+              <div key={book._id} className="max-w-sm w-full m-1">
                 <BookCard book={book} hasRentalBook={userRentalBook !== null} />
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )}
     </div>
   );

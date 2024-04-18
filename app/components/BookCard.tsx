@@ -64,7 +64,7 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
   }
 
   return (
-    <div className="max-w-md rounded-lg overflow-hidden shadow-md border my-1 hover:bg-neutral-100">
+    <div className="w-full rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100">
       <div className="px-6 py-4">
         <div className="flex items-baseline">
           <p className="font-bold mb-2">{book.title}&nbsp;&nbsp;</p>
@@ -84,9 +84,10 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
         )}
 
         {hasRentalBook &&
+        !book.rental_info.rent_available &&
         book.rental_info.user_email === session?.user?.email ? (
           <span
-            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2"
+            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer"
             onClick={returnBook}
           >
             반납하기
@@ -97,14 +98,17 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
           </span>
         ) : (
           <span
-            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2"
+            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer"
             onClick={rentBook}
           >
             대여하기
           </span>
         )}
 
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">
+        <span
+          className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer"
+          onClick={() => router.push(`/details/${book.manage_id}`)}
+        >
           상세정보
         </span>
       </div>
