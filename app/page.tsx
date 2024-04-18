@@ -21,7 +21,7 @@ export default function Home() {
             <p className="text-center p-4 text-2xl">GEUK Library</p>
             <SignInButton />
           </div>
-          <div className="pt-16 text-neutral-400">
+          <div className="fixed bottom-2 pt-16 text-neutral-400">
             <p className="text-center text-xs">
               &copy; Ultrasound Korea, GE Healthcare
             </p>

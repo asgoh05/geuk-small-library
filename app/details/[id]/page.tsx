@@ -4,6 +4,7 @@ import { IBook } from "@/app/(models)/Book";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import SignInButton from "@/app/components/SignInButton";
 
 export default function BookDetailsPage({
   params,
@@ -14,38 +15,6 @@ export default function BookDetailsPage({
   const [isLoading, setLoading] = useState(true);
   const { data: session } = useSession();
 
-  async function handleReturn() {
-    if (!session) {
-      window.alert("로그인 후 이용해주세요");
-      return;
-    }
-    const res = await fetch(`/api/books/return/${book?.manage_id}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        return_date: Date.now(),
-        user_name: session.user?.name,
-        user_email: session.user?.email,
-      }),
-    });
-    setLoading(true);
-  }
-
-  async function handleRent() {
-    if (!session) {
-      window.alert("로그인 후 이용해주세요");
-      return;
-    }
-    const res = await fetch(`/api/books/rent/${book?.manage_id}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        rent_date: Date.now(),
-        user_name: session.user?.name,
-        user_email: session.user?.email,
-      }),
-    });
-    setLoading(true);
-  }
-
   useEffect(() => {
     fetch(`/api/books/${params.id}`)
       .then((res) => res.json())
@@ -54,88 +23,77 @@ export default function BookDetailsPage({
         setLoading(false);
       });
   }, [params.id, isLoading]);
+
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Link
-        href="/"
-        className="absolute top-10 left-10 rounded-full bg-slate-300 p-4 hover:bg-slate-600 hover:text-white cursor-pointer"
-      >
-        Home
-      </Link>
-      {isLoading ? (
-        <p>loading...</p>
-      ) : (
-        <div className="flex">
-          <div className="flex flex-col p-24 items-center h-screen justify-center">
-            <div className="flex gap-3 p-4 w-full">
-              <p>도서 번호:</p>
-              <input type="text" value={book?.manage_id} />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>제목:</p>
-              <input type="text" value={book?.title} />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>저자:</p>
-              <input type="text" value={book?.author} />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>등록 날짜:</p>
-              <input type="text" value={toDateOnly(book?.reg_date)} />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>추가 정보:</p>
-              <input type="text" value={book?.comments} />
-            </div>
+    <main className="flex min-h-screen flex-col items-center justify-between pb-4 px-4">
+      <div className="fixed z-10 bg-white border py-2">
+        <div className="flex w-screen px-8 justify-between items-center">
+          <Link href="/" className="w-full text-xs">
+            <p className="w-full text-xs">
+              {session?.user?.name}님, 환영합니다
+            </p>
+          </Link>
+          <SignInButton />
+        </div>
+      </div>
+      <div>
+        <div className="flex flex-col w-screen gap-4 h-screen pt-14 pb-14 border justify-center items-center">
+          <div className="flex flex-row gap-2 items-end">
+            <p className="text-xs">도서 번호:</p>
+            <p className="text-md">{book?.manage_id}</p>
           </div>
-          <div className="flex flex-col p-24 items-center h-screen justify-center">
-            <div className="p-4 w-full">
-              {book?.rental_info.rent_available ? (
-                <p className="text-green-600">대여 가능</p>
-              ) : (
-                <p className="text-red-600">현재 이용중인 회원이 있어요</p>
-              )}
+          <div className="flex flex-row gap-2 items-end">
+            <p className="text-xs">책 이름:</p>
+            <p className="text-md">{book?.title}</p>
+          </div>
+          <div className="flex flex-row gap-2 items-end">
+            <p className="text-xs">저자 :</p>
+            <p className="text-md">{book?.author}</p>
+          </div>
+          <div className="flex flex-row gap-2 items-end">
+            <p className="text-xs">등록일 :</p>
+            <p className="text-md">
+              {book?.reg_date.toString().substring(0, 10)}
+            </p>
+          </div>
+          <div className="absolute">
+            {book?.rental_info.rent_available ? (
+              <p className="text-xs bg-green-300 p-1 rounded-full">대여 가능</p>
+            ) : (
+              <p className="text-xs bg-red-300 p-1 rounded-full">대여 불가</p>
+            )}
+          </div>
+          <div className="gap-2 items-end border mt-10 py-10 px-20 rounded-lg">
+            <p className="text-xs text-center pb-4">최근 사용자</p>
+            <p className="text-md text-center">
+              <i>{book?.rental_info.user_name}</i>
+            </p>
+            <p className="text-xs text-center text-neutral-500">
+              <i>{book?.rental_info.user_email}</i>
+            </p>
+            <div className="flex flex-row gap-2 items-end pt-4">
+              <p className="text-xs">대여한 날짜 :</p>
+              <p className="text-xs">
+                {book?.rental_info.rent_date?.toString().substring(0, 10)}
+              </p>
             </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>대여일: </p>
-              <input
-                type="text"
-                value={toDateOnly(book?.rental_info.rent_date)}
-              />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>반납일: </p>
-              <input
-                type="text"
-                value={toDateOnly(book?.rental_info.return_date)}
-              />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>사용중인 회원: </p>
-              <input type="text" value={book?.rental_info.user_name} />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              <p>직원 이메일: </p>
-              <input type="email" value={book?.rental_info.user_email} />
-            </div>
-            <div className="flex gap-3 p-4 w-full">
-              {session &&
-              !book?.rental_info.rent_available &&
-              session.user?.email === book?.rental_info.user_email ? (
-                <button onClick={handleReturn}>반납하기</button>
-              ) : (
-                ""
-              )}
-              {session && book?.rental_info.rent_available ? (
-                <button onClick={handleRent}>대여하기</button>
-              ) : (
-                ""
-              )}
+            <div className="flex flex-row gap-2 items-end">
+              <p className="text-xs">반납한 날짜 :</p>
+              <p className="text-xs">
+                {book?.rental_info.return_date
+                  ? book?.rental_info.return_date.toString().substring(0, 10)
+                  : "-"}
+              </p>
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+      <div className="fixed bottom-2">
+        <p className="text-center text-xs pt-6 text-neutral-400">
+          &copy; Ultrasound Korea, GE Healthcare
+        </p>
+      </div>
+    </main>
   );
 }
 
