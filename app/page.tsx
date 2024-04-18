@@ -13,7 +13,7 @@ export default function Home() {
         <MainPage />
       ) : (
         // 로그인 되지 않았을 때
-        <main className="flex min-h-screen flex-col items-center justify-between p-8">
+        <main className="flex min-h-screen flex-col items-center justify-between p-8 max-w-sm">
           <div>
             <p className="text-xs">GEUK 도서관에 오신 것을 환영합니다</p>
           </div>
@@ -21,7 +21,7 @@ export default function Home() {
             <p className="text-center p-4 text-2xl">GEUK Library</p>
             <SignInButton />
           </div>
-          <div className="fixed bottom-2 pt-16 text-neutral-400">
+          <div className="pt-16 text-neutral-400">
             <p className="text-center text-xs">
               &copy; Ultrasound Korea, GE Healthcare
             </p>

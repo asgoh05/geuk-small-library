@@ -60,12 +60,12 @@ export default function BookList() {
         </div>
       )}
       <div className="flex items-center justify-start py-2">
-        <p className="text-sm">도서번호로 검색: &nbsp;</p>
+        <p className="text-sm">도서 번호: &nbsp;</p>
         <p className="text-neutral-500 text-sm align-bottom pr-1">GEUK_BOOK_</p>
         <FourDigitInput id="fourDigitInput" onValueChanged={searchById} />
       </div>
       <div className="flex items-center justify-start pb-2">
-        <p className="text-sm">책이름으로 검색: &nbsp;</p>
+        <p className="text-sm">책이름 검색: &nbsp;</p>
         <input
           type="text"
           className="w-auto border border-neutral-200 rounded indent-1"
