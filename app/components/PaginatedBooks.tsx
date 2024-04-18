@@ -13,9 +13,6 @@ export default function PaginatedBooks({
   books,
   userRentalBook,
 }: PaginatedBooksProps) {
-  useEffect(() => {
-    setCurPage(1);
-  }, [books]);
   const [curPage, setCurPage] = useState(1);
 
   const itemsPerPage = 10;
@@ -23,6 +20,8 @@ export default function PaginatedBooks({
     Math.ceil(books.length / itemsPerPage) === 0
       ? 1
       : Math.ceil(books.length / itemsPerPage);
+
+  if (curPage > pageCount) setCurPage(pageCount);
 
   return (
     <>
