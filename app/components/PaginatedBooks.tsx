@@ -6,12 +6,12 @@ import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci";
 
 interface PaginatedBooksProps {
   books: IBook[];
-  userRentalBook: IBook | null;
+  userRentalBooks: IBook[];
 }
 
 export default function PaginatedBooks({
   books,
-  userRentalBook,
+  userRentalBooks,
 }: PaginatedBooksProps) {
   const [curPage, setCurPage] = useState(1);
 
@@ -35,7 +35,15 @@ export default function PaginatedBooks({
           .map((book) => {
             return (
               <div key={book._id} className="min-w-72 m-1 flex-grow basis-3/12">
-                <BookCard book={book} hasRentalBook={userRentalBook !== null} />
+                <BookCard
+                  book={book}
+                  isMyBook={
+                    userRentalBooks.find(
+                      (mybook) => mybook.manage_id === book.manage_id
+                    ) !== undefined
+                  }
+                  noRentBook={userRentalBooks.length}
+                />
               </div>
             );
           })}

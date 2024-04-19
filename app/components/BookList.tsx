@@ -1,5 +1,4 @@
 import { IBook } from "../(models)/Book";
-import BookCard from "./BookCard";
 import FourDigitInput from "./FourDigitInput";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -12,7 +11,8 @@ export default function BookList() {
   const [books, setBooks] = useState<IBook[]>([]);
   const [searchKey, setSearchKey] = useState("");
   const [isLoading, setLoading] = useState(true);
-  const [userRentalBook, setUserRentalBook] = useState<IBook | null>(null);
+  const [userRentalBooks, setUserRentalBooks] = useState<IBook[]>([]);
+  const [showMybook, setShowMybook] = useState(false);
 
   useEffect(() => {
     fetch("/api/books")
@@ -21,12 +21,12 @@ export default function BookList() {
         setBooks(books);
         setLoading(false);
 
-        const rentalBook = books.find(
+        const rentalBook = books.filter(
           (book: IBook) =>
             !book.rental_info.rent_available &&
             book.rental_info.user_email === session?.user?.email
         );
-        setUserRentalBook(rentalBook ?? null);
+        setUserRentalBooks(rentalBook);
       });
   }, [books, session]);
 
@@ -47,32 +47,43 @@ export default function BookList() {
   }
   return (
     <div>
-      {userRentalBook == null ? (
-        ""
-      ) : (
-        <div>
-          <p className="text-xs absolute rounded-e-full bg-red-600 text-white px-1">
-            대여중
-          </p>
-          <BookCard
-            book={userRentalBook}
-            hasRentalBook={userRentalBook != null}
-          />
+      <div className="max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 m-1 mb-4">
+        <div className="px-6 py-4">
+          <div className="flex justify-between items-center gap-2">
+            <p className="font-bold mb-2 max-w-60">도서 검색</p>
+            {showMybook ? (
+              <div
+                className="text-red-600 text-xs mb-2 rounded-full border py-1 px-2 shadow- hover:bg-neutral-200 cursor-pointer"
+                onClick={() => setShowMybook(!showMybook)}
+              >
+                내 책 보기
+              </div>
+            ) : (
+              <div
+                className="text-black text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-neutral-200 cursor-pointer"
+                onClick={() => setShowMybook(!showMybook)}
+              >
+                내 책 보기
+              </div>
+            )}
+          </div>
+          <div className="flex items-center py-2 w-full flex-nowrap">
+            <p className="text-sm min-w-24">도서 번호:</p>
+            <p className="text-neutral-500 text-sm align-bottom pr-1">
+              GEUK_BOOK_
+            </p>
+            <FourDigitInput id="fourDigitInput" onValueChanged={searchById} />
+          </div>
+          <div className="flex items-center justify-start pb-2">
+            <p className="text-sm min-w-24">책 이름:</p>
+            <input
+              type="text"
+              className="w-full border border-neutral-200 rounded indent-1"
+              value={searchKey}
+              onChange={searchByKeyword}
+            />
+          </div>
         </div>
-      )}
-      <div className="flex items-center justify-start py-2">
-        <p className="text-sm">도서 번호: &nbsp;</p>
-        <p className="text-neutral-500 text-sm align-bottom pr-1">GEUK_BOOK_</p>
-        <FourDigitInput id="fourDigitInput" onValueChanged={searchById} />
-      </div>
-      <div className="flex items-center justify-start pb-2">
-        <p className="text-sm">책 이름: &nbsp;</p>
-        <input
-          type="text"
-          className="w-auto border border-neutral-200 rounded indent-1"
-          value={searchKey}
-          onChange={searchByKeyword}
-        />
       </div>
 
       {isLoading ? (
@@ -88,14 +99,23 @@ export default function BookList() {
               </div>
             );
           })} */}
-          <PaginatedBooks
-            books={books.filter(
-              (book) =>
-                book.manage_id.includes(manageId) &&
-                book.title.includes(searchKey)
-            )}
-            userRentalBook={userRentalBook}
-          />
+          {books && !showMybook ? (
+            <PaginatedBooks
+              books={books.filter(
+                (book) =>
+                  book.manage_id.includes(manageId) &&
+                  book.title.includes(searchKey)
+              )}
+              userRentalBooks={userRentalBooks}
+            />
+          ) : books && showMybook ? (
+            <PaginatedBooks
+              books={userRentalBooks}
+              userRentalBooks={userRentalBooks}
+            />
+          ) : (
+            "ServerError"
+          )}
         </div>
       )}
     </div>

@@ -39,7 +39,7 @@ export default function FourDigitInput({
   return (
     <input
       id={id}
-      className="w-auto border border-neutral-200 rounded indent-1 pl-0"
+      className="w-full border border-neutral-200 rounded indent-1 pl-0"
       type="text"
       placeholder="예: 24-01"
       onChange={handleChange}
