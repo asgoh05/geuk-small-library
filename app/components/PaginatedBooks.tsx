@@ -25,7 +25,8 @@ export default function PaginatedBooks({
 
   return (
     <>
-      <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center">
+      {/* <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center"> */}
+      <div className="flex flex-wrap">
         {books
           .slice(
             (curPage - 1) * itemsPerPage,
@@ -33,7 +34,7 @@ export default function PaginatedBooks({
           )
           .map((book) => {
             return (
-              <div key={book._id} className="max-w-sm w-full m-1">
+              <div key={book._id} className="min-w-72 m-1 flex-grow basis-3/12">
                 <BookCard book={book} hasRentalBook={userRentalBook !== null} />
               </div>
             );

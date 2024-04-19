@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
 import { useRouter } from "next/navigation";
+import { AddDays, SubstractDays } from "../(general)/datetime";
 
 export interface BookCardProps {
   hasRentalBook: boolean;
@@ -10,6 +11,23 @@ export interface BookCardProps {
 export default function BookCard({ book, hasRentalBook }: BookCardProps) {
   const { data: session } = useSession();
   const router = useRouter();
+
+  const rentDate = book.rental_info.rent_date
+    ? new Date(book.rental_info.rent_date)
+    : null;
+
+  const returnDueDate = rentDate
+    ? AddDays(book.rental_info.rent_date, 14).setHours(23, 59, 59)
+    : null;
+
+  const remainingDays = returnDueDate
+    ? Math.floor((returnDueDate - Date.now()) / (24 * 60 * 60 * 1000))
+    : null;
+
+  // const today = new Date(Date.now());
+  // const remainReturnDue = returnDueDate
+  //   ? returnDueDate.setDate(returnDueDate.getDate() - today.getDate())
+  //   : null;
 
   async function returnBook() {
     if (confirm(`책 "${book.title}"을 반납하시겠습니까?`)) {
@@ -111,6 +129,33 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
         >
           상세정보
         </span>
+        <div>
+          {!book.rental_info.rent_available &&
+          remainingDays !== null &&
+          remainingDays > 0 ? (
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">
+              #반납기한{"  "}
+              <span className=" text-green-600 ">{`D-${remainingDays?.toString()}`}</span>
+            </span>
+          ) : !book.rental_info.rent_available &&
+            remainingDays !== null &&
+            remainingDays === 0 ? (
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">
+              #반납기한{"  "} <span className=" text-red-600 ">Today</span>
+            </span>
+          ) : !book.rental_info.rent_available &&
+            remainingDays !== null &&
+            remainingDays < 0 ? (
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">
+              #반납기한{"  "}
+              <span className=" text-red-600 ">{`D+${Math.abs(
+                remainingDays
+              )?.toString()} over`}</span>
+            </span>
+          ) : (
+            ""
+          )}
+        </div>
       </div>
     </div>
   );
