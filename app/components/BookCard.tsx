@@ -2,6 +2,8 @@ import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
 import { useRouter } from "next/navigation";
 import { AddDays, SubstractDays } from "../(general)/datetime";
+import { useState } from "react";
+import BookDetailsModal from "./BookDetailsModal";
 
 export interface BookCardProps {
   hasRentalBook: boolean;
@@ -11,6 +13,10 @@ export interface BookCardProps {
 export default function BookCard({ book, hasRentalBook }: BookCardProps) {
   const { data: session } = useSession();
   const router = useRouter();
+  const [openModal, setModal] = useState(false);
+  const handleModal = () => {
+    setModal(!openModal);
+  };
 
   const rentDate = book.rental_info.rent_date
     ? new Date(book.rental_info.rent_date)
@@ -122,10 +128,9 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
             대여하기
           </span>
         )}
-
         <span
           className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer"
-          onClick={() => router.push(`/details/${book.manage_id}`)}
+          onClick={handleModal}
         >
           상세정보
         </span>
@@ -157,6 +162,7 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
           )}
         </div>
       </div>
+      {openModal && <BookDetailsModal book={book} toggleModal={handleModal} />}
     </div>
   );
 }
