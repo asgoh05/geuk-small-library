@@ -92,7 +92,7 @@ export default function BookCard({ book, hasRentalBook }: BookCardProps) {
           >
             반납하기
           </span>
-        ) : hasRentalBook ? (
+        ) : hasRentalBook || !book.rental_info.rent_available ? (
           <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2">
             대여하기
           </span>
