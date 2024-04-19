@@ -10,7 +10,7 @@ export default function BookDetailsModal({
 }: BookDetailsModalProps) {
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-300 flex justify-center items-center">
-      <div className="fixed max-w-full bg-white shadow-lg py-2 rounded-md">
+      <div className="fixed min-w-80 max-w-96 bg-white shadow-lg py-2 rounded-md">
         {book?.rental_info.rent_available ? (
           <p className="absolute text-xs bg-green-300 p-1 rounded-full left-2">
             대여 가능
@@ -66,7 +66,9 @@ export default function BookDetailsModal({
         </div>
         <div className="border-t border-gray-300 flex justify-between items-center mt-2 px-4 pt-2">
           <div className="text-sm font-medium text-gray-700">
-            Example Content
+            <p className="text-center text-xs pt-6 text-neutral-400">
+              &copy; Ultrasound Korea, GE Healthcare
+            </p>
           </div>
           <button
             type="button"
