@@ -9,7 +9,7 @@ export default function BookDetailsModal({
   toggleModal,
 }: BookDetailsModalProps) {
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-gray-300 flex justify-center items-center">
+    <div className="fixed top-0 left-0 w-full h-full bg-gray-300 flex justify-center items-center z-10">
       <div className="fixed min-w-80 max-w-96 bg-white shadow-lg py-2 rounded-md">
         {book?.rental_info.rent_available ? (
           <p className="absolute text-xs bg-green-300 p-1 rounded-full left-2">
@@ -25,9 +25,9 @@ export default function BookDetailsModal({
         </div>
         <div className="">
           <div className="flex flex-col w-full h-full gap-3 justify-center items-center">
-            <div className="flex flex-row gap-2 items-end">
-              <p className="text-xs">책 이름:</p>
-              <p className="text-md">{book?.title}</p>
+            <div className="flex flex-row gap-2 items-end mx-8">
+              <p className="text-xs">책 이름 :</p>
+              <p className="text-md max-w-52">{book?.title}</p>
             </div>
             <div className="flex flex-row gap-2 items-end">
               <p className="text-xs">저자 :</p>

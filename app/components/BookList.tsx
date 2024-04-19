@@ -48,7 +48,7 @@ export default function BookList() {
   return (
     <div>
       <div className="max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 m-1 mb-4">
-        <div className="px-6 py-4">
+        <div className="px-6 py-4 bg-gray-50">
           <div className="flex justify-between items-center gap-2">
             <p className="font-bold mb-2 max-w-60">도서 검색</p>
             {showMybook ? (
