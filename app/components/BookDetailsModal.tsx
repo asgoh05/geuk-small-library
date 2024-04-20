@@ -9,7 +9,7 @@ export default function BookDetailsModal({
   toggleModal,
 }: BookDetailsModalProps) {
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-gray-300 flex justify-center items-center z-10">
+    <div className="fixed top-0 left-0 w-full h-full backdrop-blur-xl flex justify-center items-center z-10">
       <div className="fixed min-w-80 max-w-96 bg-white shadow-lg py-2 rounded-md">
         {book?.rental_info.rent_available ? (
           <p className="absolute text-xs bg-green-300 p-1 rounded-full left-2">
