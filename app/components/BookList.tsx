@@ -51,6 +51,9 @@ export default function BookList() {
         <div className="px-6 py-4 bg-gray-50">
           <div className="flex justify-between items-center gap-2">
             <p className="font-bold mb-2 max-w-60">도서 검색</p>
+            <p className="relative bottom-4 text-gray-500 align-middle text-xs">
+              {userRentalBooks.length}/3권 대여중
+            </p>
             {showMybook ? (
               <div
                 className="text-red-600 text-xs mb-2 rounded-full border py-1 px-2 shadow- hover:bg-neutral-200 cursor-pointer"

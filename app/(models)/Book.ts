@@ -7,9 +7,11 @@ export interface IBook extends mongoose.Document {
   img_url: string;
   reg_date: Date;
   comments: string;
+  isMissing: boolean;
   rental_info: {
     rent_available: boolean;
     rent_date: Date;
+    expected_return_date: Date;
     return_date: Date;
     user_name: string;
     user_email: string;
@@ -26,9 +28,11 @@ const bookSchema = new Schema({
   img_url: { type: String, required: false },
   reg_date: { type: Date, required: false },
   comments: { type: String, required: false },
+  isMissing: { type: String, required: false, default: false },
   rental_info: {
     rent_available: Boolean,
     rent_date: Date,
+    expected_return_date: Date,
     return_date: Date,
     user_name: String,
     user_email: String,

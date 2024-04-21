@@ -9,14 +9,29 @@ export default function AdminNav() {
     <div>
       {verified ? (
         <div className="flex gap-4 justify-center">
-          <Link className="rounded-full px-2 py-1 border" href="/admin">
+          <Link
+            className="rounded-full text-sm px-2 py-1 border hover:opacity-50"
+            href="/admin"
+          >
             Admin Home
           </Link>
-          <Link className="rounded-full px-2 py-1 border" href="/admin/addbook">
+          <Link
+            className="rounded-full text-sm px-2 py-1 border hover:opacity-50"
+            href="/admin/addbook"
+          >
             도서 추가
           </Link>
-          <Link className="rounded-full px-2 py-1 border" href="/">
-            Exit Admin Page
+          <Link
+            className="rounded-full text-sm px-2 py-1 border hover:opacity-50"
+            href="/admin/addbookExcel"
+          >
+            도서 추가 (Excel)
+          </Link>
+          <Link
+            className="rounded-full text-sm px-2 py-1 bg-red-200 hover:opacity-50"
+            href="/"
+          >
+            Close
           </Link>
         </div>
       ) : (

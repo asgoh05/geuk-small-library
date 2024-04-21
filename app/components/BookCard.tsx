@@ -23,16 +23,12 @@ export default function BookCard({
     setDetailModal(!openDetailModal);
   };
 
-  const rentDate = book.rental_info.rent_date
-    ? new Date(book.rental_info.rent_date)
-    : null;
-
-  const returnDueDate = rentDate
-    ? AddDays(book.rental_info.rent_date, 14).setHours(23, 59, 59)
-    : null;
-
-  const remainingDays = returnDueDate
-    ? Math.floor((returnDueDate - Date.now()) / (24 * 60 * 60 * 1000))
+  const remainingDays = book.rental_info.expected_return_date
+    ? Math.floor(
+        (new Date(book.rental_info.expected_return_date).getTime() -
+          new Date(Date.now()).getTime()) /
+          (24 * 60 * 60 * 1000)
+      )
     : null;
 
   // const today = new Date(Date.now());
