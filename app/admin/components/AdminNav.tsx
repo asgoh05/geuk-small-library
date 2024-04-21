@@ -1,10 +1,15 @@
 "use client";
 import Link from "next/link";
 import AdminPassword from "./AdminPassword";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export default function AdminNav() {
   const [verified, setVerified] = useState(false);
+  const callbackRef = useCallback((inputElement: HTMLElement) => {
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, []);
   return (
     <div>
       {verified ? (

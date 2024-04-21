@@ -1,5 +1,5 @@
 "use client";
-import { BaseSyntheticEvent, useState } from "react";
+import { BaseSyntheticEvent, useState, useCallback } from "react";
 import { IoReturnDownBackOutline } from "react-icons/io5";
 
 interface AdminPasswordProps {
@@ -9,6 +9,12 @@ interface AdminPasswordProps {
 export default function AdminPassword({ onVerified }: AdminPasswordProps) {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const callbackRef = useCallback((inputElement: HTMLInputElement) => {
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, []);
+
   const changePassword = (e: BaseSyntheticEvent) => {
     setPassword(e.target.value);
   };
@@ -34,6 +40,7 @@ export default function AdminPassword({ onVerified }: AdminPasswordProps) {
             type="password"
             onChange={changePassword}
             value={password}
+            ref={callbackRef}
           />
           <button type="submit" className="relative right-10 font-bold">
             <IoReturnDownBackOutline />
