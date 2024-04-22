@@ -1,26 +1,40 @@
 "use client";
 import { BaseSyntheticEvent, useState, useRef } from "react";
-import readXlsxFile from "read-excel-file";
+import readXlsxFile, { ParsedObjectsResult } from "read-excel-file";
+import { IBook } from "@/app/(models)/Book";
 
 export default function AddBookExcelPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   const readFile = (e: BaseSyntheticEvent) => {
     const { files } = e.target;
 
+    setLoading(true);
+    setMessage("");
+
     if (files !== null) {
       readXlsxFile(files[0], { schema, sheet: "GEUK 도서 리스트" })
         .then((rows) => {
-          fetch("/api/books/insert_bulk", {
-            method: "POST",
-            headers: {
-              "Content-type": "application/json",
-            },
-            body: JSON.stringify(rows),
-          });
+          if (rows.errors.length > 0) {
+            setMessage(rows.errors.join(","));
+          } else {
+            fetch("/api/books/insert_bulk", {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify(rows),
+            });
+          }
+          setMessage("completed");
         })
-        .catch((err) => setMessage(err.message));
+        .catch((err) => setMessage(err.message))
+        .finally(() => {
+          setLoading(false);
+          setTimeout(() => setMessage(""), 3000);
+        });
     } else {
       setMessage("file not found");
     }
@@ -30,6 +44,7 @@ export default function AddBookExcelPage() {
     <div className="pt-8">
       <input ref={fileRef} type="file" onChange={readFile} />
       <p className="text-red-700 text-xs">{message}</p>
+      {isLoading ? "Loading..." : ""}
     </div>
   );
 }
@@ -61,6 +76,6 @@ const schema = {
   },
   분실여부: {
     prop: "isMissing",
-    type: String,
+    type: Boolean,
   },
 };
