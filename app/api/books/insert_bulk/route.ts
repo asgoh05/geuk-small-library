@@ -6,6 +6,16 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     console.log(body);
     (body as ExcelBulkData).rows.forEach(async (book) => {
+      const foundBook = await Book.findOne({ manage_id: book.manage_id });
+      if (foundBook) {
+        const updateBook = foundBook as IBook;
+        updateBook.title = book.title;
+        updateBook.author = book.author;
+        updateBook.reg_date = book.reg_date;
+        updateBook.comments = book.comments;
+        updateBook.isMissing = book.isMissing;
+        await updateBook.save();
+      }
       await Book.create(book);
     });
 
