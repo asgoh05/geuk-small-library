@@ -107,7 +107,7 @@ export default function RentalInfoModal({
                     cornerRadius: 5,
                   },
                 ]}
-                width={400}
+                width={350}
                 height={200}
               />
             </div>
