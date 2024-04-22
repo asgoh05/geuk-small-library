@@ -54,6 +54,14 @@ export default function BookDetailsModal({
                 </p>
               </div>
               <div className="flex flex-row gap-2 items-end">
+                <p className="text-xs">반납 예정일 :</p>
+                <p className="text-xs">
+                  {book?.rental_info.expected_return_date
+                    ?.toString()
+                    .substring(0, 10)}
+                </p>
+              </div>
+              <div className="flex flex-row gap-2 items-end">
                 <p className="text-xs">반납한 날짜 :</p>
                 <p className="text-xs">
                   {book?.rental_info.return_date

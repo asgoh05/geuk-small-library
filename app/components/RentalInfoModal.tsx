@@ -9,7 +9,7 @@ interface IDatagridRow {
   title: String;
   user_name: String;
   rent_date: String;
-  remaining_days: Number;
+  remaining_days: number;
 }
 
 interface RentalInfoModalProps {
@@ -25,16 +25,12 @@ export default function RentalInfoModal({
   const bookRental = books.filter(
     (book) =>
       !book.rental_info.rent_available &&
-      (RemainingDays(
-        new Date(book.rental_info.expected_return_date)
-      ) as number) >= 0
+      RemainingDays(new Date(book.rental_info.expected_return_date)) >= 0
   );
   const bookOverdue = books.filter(
     (book) =>
       !book.rental_info.rent_available &&
-      (RemainingDays(
-        new Date(book.rental_info.expected_return_date)
-      ) as number) < 0
+      RemainingDays(new Date(book.rental_info.expected_return_date)) < 0
   );
 
   const rows = books

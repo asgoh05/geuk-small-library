@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
 import { useRouter } from "next/navigation";
-import { AddDays, SubstractDays } from "../(general)/datetime";
+import { AddDays, RemainingDays, SubstractDays } from "../(general)/datetime";
 import { useState } from "react";
 import BookDetailsModal from "./BookDetailsModal";
 
@@ -24,11 +24,7 @@ export default function BookCard({
   };
 
   const remainingDays = book.rental_info.expected_return_date
-    ? Math.floor(
-        (new Date(book.rental_info.expected_return_date).getTime() -
-          new Date(Date.now()).getTime()) /
-          (24 * 60 * 60 * 1000)
-      )
+    ? RemainingDays(new Date(book.rental_info.expected_return_date))
     : null;
 
   // const today = new Date(Date.now());

@@ -8,7 +8,7 @@ export function SubstractDays(date: Date, days: number): Date {
   return new Date(_date.setDate(_date.getDate() - days));
 }
 
-export function RemainingDays(future_date: Date): Number {
+export function RemainingDays(future_date: Date): number {
   return Math.floor(
     (future_date.getTime() - new Date(Date.now()).getTime()) /
       (24 * 60 * 60 * 1000)
