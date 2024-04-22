@@ -3,6 +3,7 @@ import FourDigitInput from "./FourDigitInput";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import PaginatedBooks from "./PaginatedBooks";
+import RentalInfoModal from "./RentalInfoModal";
 
 export default function BookList() {
   const { data: session } = useSession();
@@ -13,6 +14,7 @@ export default function BookList() {
   const [isLoading, setLoading] = useState(true);
   const [userRentalBooks, setUserRentalBooks] = useState<IBook[]>([]);
   const [showMybook, setShowMybook] = useState(false);
+  const [openRentalInfoModal, setOpenRentalInfoModal] = useState(false);
 
   useEffect(() => {
     fetch("/api/books")
@@ -47,28 +49,42 @@ export default function BookList() {
   }
   return (
     <div>
+      {openRentalInfoModal && (
+        <RentalInfoModal
+          books={books}
+          toggleModal={() => setOpenRentalInfoModal(false)}
+        />
+      )}
       <div className="max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 m-1 mb-4">
         <div className="px-6 py-4 bg-gray-50">
           <div className="flex justify-between items-center gap-2">
             <p className="font-bold mb-2 max-w-60">도서 검색</p>
-            <p className="relative bottom-4 text-gray-500 align-middle text-xs">
+            <p className="relative bottom-8 text-gray-500 align-middle text-xs">
               {userRentalBooks.length}/3권 대여중
             </p>
-            {showMybook ? (
-              <div
-                className="text-red-600 text-xs mb-2 rounded-full border py-1 px-2 shadow- hover:bg-neutral-200 cursor-pointer"
-                onClick={() => setShowMybook(!showMybook)}
-              >
-                내 책 보기
-              </div>
-            ) : (
+            <div>
+              {showMybook ? (
+                <div
+                  className="text-red-600 text-xs mb-2 rounded-full border py-1 px-2 shadow- hover:bg-neutral-200 cursor-pointer text-center"
+                  onClick={() => setShowMybook(!showMybook)}
+                >
+                  내 책 보기
+                </div>
+              ) : (
+                <div
+                  className="text-black text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-neutral-200 cursor-pointer text-center"
+                  onClick={() => setShowMybook(!showMybook)}
+                >
+                  내 책 보기
+                </div>
+              )}
               <div
                 className="text-black text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-neutral-200 cursor-pointer"
-                onClick={() => setShowMybook(!showMybook)}
+                onClick={() => setOpenRentalInfoModal(true)}
               >
-                내 책 보기
+                모든 대여정보
               </div>
-            )}
+            </div>
           </div>
           <div className="flex items-center py-2 w-full flex-nowrap">
             <p className="text-sm min-w-24">도서 번호:</p>

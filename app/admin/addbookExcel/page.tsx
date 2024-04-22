@@ -49,14 +49,6 @@ export default function AddBookExcelPage() {
   );
 }
 
-interface InsertBook {
-  manage_id: String;
-  title: String;
-  author: String;
-  reg_date: Date;
-  comments: String;
-}
-
 const schema = {
   "No.": {
     // JSON object property name.
