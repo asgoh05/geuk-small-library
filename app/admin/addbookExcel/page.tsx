@@ -25,7 +25,7 @@ export default function AddBookExcelPage() {
               headers: {
                 "Content-type": "application/json",
               },
-              body: JSON.stringify(rows),
+              body: JSON.stringify(rows.rows),
             });
           }
           setMessage("completed");
@@ -47,6 +47,14 @@ export default function AddBookExcelPage() {
       {isLoading ? "Loading..." : ""}
     </div>
   );
+}
+
+interface InsertBook {
+  manage_id: String;
+  title: String;
+  author: String;
+  reg_date: Date;
+  comments: String;
 }
 
 const schema = {
@@ -73,9 +81,5 @@ const schema = {
   Note: {
     prop: "comment",
     type: String,
-  },
-  분실여부: {
-    prop: "isMissing",
-    type: Boolean,
   },
 };
