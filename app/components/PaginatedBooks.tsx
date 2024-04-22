@@ -34,7 +34,7 @@ export default function PaginatedBooks({
           )
           .map((book) => {
             return (
-              <div key={book._id} className="min-w-72 m-1 basis-3/12">
+              <div key={book._id} className="min-w-72 m-1 basis-3/12 flex-grow">
                 <BookCard
                   book={book}
                   isMyBook={
