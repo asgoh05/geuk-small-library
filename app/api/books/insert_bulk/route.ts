@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
         updateBook.author = book.author;
         updateBook.reg_date = book.reg_date;
         updateBook.comments = book.comments;
-        updateBook.isMissing = book.isMissing;
         await updateBook.save();
       } else {
         await Book.create({
@@ -23,7 +22,6 @@ export async function POST(req: NextRequest) {
           img_url: "",
           reg_date: book.reg_date,
           comments: book.comments,
-          isMissing: book.isMissing,
           rental_info: {
             rent_available: true,
             rent_date: null,
