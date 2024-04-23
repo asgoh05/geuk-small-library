@@ -17,6 +17,23 @@ export interface IBook extends mongoose.Document {
   };
 }
 
+export interface IBookInternal {
+  manage_id: string;
+  title: string;
+  author: string;
+  img_url: string;
+  reg_date: Date;
+  comments: string;
+  rental_info: {
+    rent_available: boolean;
+    rent_date: Date | null;
+    expected_return_date: Date | null;
+    return_date: Date | null;
+    user_name: string;
+    user_email: string;
+  };
+}
+
 mongoose.connect(process.env.MONGODB_URI!);
 mongoose.Promise = global.Promise;
 
