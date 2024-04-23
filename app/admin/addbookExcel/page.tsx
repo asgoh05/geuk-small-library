@@ -36,7 +36,7 @@ export default function AddBookExcelPage() {
         const result = await res.json();
         setMessage(result.message);
       } catch (err) {
-        console.log(err);
+        setMessage(`${err}`);
       } finally {
         setLoading(false);
         setTimeout(() => setMessage(""), 3000);
