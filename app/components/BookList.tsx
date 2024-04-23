@@ -23,12 +23,14 @@ export default function BookList() {
         setBooks(books);
         setLoading(false);
 
-        const rentalBook = books.filter(
-          (book: IBook) =>
-            !book.rental_info.rent_available &&
-            book.rental_info.user_email === session?.user?.email
-        );
-        setUserRentalBooks(rentalBook);
+        if (books) {
+          const rentalBook = books.filter(
+            (book: IBook) =>
+              !book.rental_info.rent_available &&
+              book.rental_info.user_email === session?.user?.email
+          );
+          setUserRentalBooks(rentalBook);
+        }
       });
   }, [books, session]);
 

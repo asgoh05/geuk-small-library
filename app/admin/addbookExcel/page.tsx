@@ -8,33 +8,39 @@ export default function AddBookExcelPage() {
   const [message, setMessage] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-  const readFile = (e: BaseSyntheticEvent) => {
+  const readFile = async (e: BaseSyntheticEvent) => {
     const { files } = e.target;
 
     setLoading(true);
     setMessage("");
 
     if (files !== null) {
-      readXlsxFile(files[0], { schema, sheet: "GEUK 도서 리스트" })
-        .then((rows) => {
-          if (rows.errors.length > 0) {
-            setMessage(rows.errors.join(","));
-          } else {
-            fetch("/api/books/insert_bulk", {
-              method: "POST",
-              headers: {
-                "Content-type": "application/json",
-              },
-              body: JSON.stringify(rows.rows),
-            });
-          }
-          setMessage("completed");
-        })
-        .catch((err) => setMessage(err.message))
-        .finally(() => {
-          setLoading(false);
-          setTimeout(() => setMessage(""), 3000);
+      try {
+        const rows = await readXlsxFile(files[0], {
+          schema,
+          sheet: "GEUK 도서 리스트",
         });
+        if (rows.errors.length > 0) {
+          setMessage(rows.errors.join(","));
+          return;
+        }
+
+        const res = await fetch("/api/books/insert_bulk", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(rows.rows),
+        });
+
+        const result = await res.json();
+        setMessage(result.message);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+        setTimeout(() => setMessage(""), 3000);
+      }
     } else {
       setMessage("file not found");
     }
