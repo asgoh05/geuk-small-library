@@ -14,6 +14,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const books = body as Array<InsertBook>;
 
+    const dbBooks = await Book.find();
+    dbBooks.filter(async (dbBook) => {
+      if (books.map((x) => x.manage_id).includes(dbBook.manage_id) === false) {
+        await Book.deleteOne({ manage_id: dbBook.manage_id });
+      }
+    });
+
     books.forEach(async (book) => {
       const exist = await Book.findOne({ manage_id: book.manage_id });
 
