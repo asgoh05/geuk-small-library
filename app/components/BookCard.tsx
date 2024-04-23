@@ -1,7 +1,12 @@
 import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
 import { useRouter } from "next/navigation";
-import { AddDays, RemainingDays, SubstractDays } from "../(general)/datetime";
+import {
+  AddDays,
+  RemainingDays,
+  SubstractDate,
+  SubstractDays,
+} from "../(general)/datetime";
 import { useState } from "react";
 import BookDetailsModal from "./BookDetailsModal";
 
@@ -84,6 +89,33 @@ export default function BookCard({
     } else return;
   }
 
+  async function extendRent() {
+    if (confirm(`책 "${book.title}" 대여를 1주일 연장하시겠습니까?`)) {
+      try {
+        const res = await fetch(`api/books/rent/${book.manage_id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            rent_date: book.rental_info.rent_date,
+            user_name: session?.user?.name,
+            user_email: session?.user?.email,
+            extend: true,
+          }),
+        });
+        if (res.status === 200) {
+          alert("대여 연장을 완료하였습니다");
+        } else {
+          alert(
+            `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
+          );
+        }
+      } catch (err) {
+        alert("서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown");
+      } finally {
+        router.push("/");
+      }
+    } else return;
+  }
+
   return (
     <div>
       {openDetailModal && (
@@ -122,7 +154,11 @@ export default function BookCard({
             >
               반납하기
             </span>
-          ) : !isMyBook && noRentBook === 3 ? (
+          ) : (!isMyBook && noRentBook === 3) ||
+            // 한번 대여한 책은 다음날까지 대여할 수 없음
+            (book.rental_info.rent_available &&
+              book.rental_info.user_email === session?.user?.email &&
+              RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0) ? (
             <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2 shadow-md hover:shadow-inner">
               대여하기
             </span>
@@ -140,33 +176,47 @@ export default function BookCard({
           >
             상세정보
           </span>
-          <div>
-            {!book.rental_info.rent_available &&
+          {isMyBook &&
+          !book.rental_info.rent_available &&
+          SubstractDate(
+            book.rental_info.expected_return_date,
+            book.rental_info.rent_date
+          ) < 21 ? (
+            <span
+              className="inline-block bg-yellow-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer shadow-md hover:shadow-inner"
+              onClick={extendRent}
+            >
+              대여연장
+            </span>
+          ) : (
+            ""
+          )}
+
+          {!book.rental_info.rent_available &&
+          remainingDays !== null &&
+          remainingDays > 0 ? (
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
+              #반납기한{"  "}
+              <span className=" text-green-600 ">{`D-${remainingDays?.toString()}`}</span>
+            </span>
+          ) : !book.rental_info.rent_available &&
             remainingDays !== null &&
-            remainingDays > 0 ? (
-              <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
-                #반납기한{"  "}
-                <span className=" text-green-600 ">{`D-${remainingDays?.toString()}`}</span>
-              </span>
-            ) : !book.rental_info.rent_available &&
-              remainingDays !== null &&
-              remainingDays === 0 ? (
-              <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
-                #반납기한{"  "} <span className=" text-red-600 ">Today</span>
-              </span>
-            ) : !book.rental_info.rent_available &&
-              remainingDays !== null &&
-              remainingDays < 0 ? (
-              <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
-                #반납기한{"  "}
-                <span className=" text-red-600 ">{`D+${Math.abs(
-                  remainingDays
-                )?.toString()} over`}</span>
-              </span>
-            ) : (
-              ""
-            )}
-          </div>
+            remainingDays === 0 ? (
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
+              #반납기한{"  "} <span className=" text-red-600 ">Today</span>
+            </span>
+          ) : !book.rental_info.rent_available &&
+            remainingDays !== null &&
+            remainingDays < 0 ? (
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
+              #반납기한{"  "}
+              <span className=" text-red-600 ">{`D+${Math.abs(
+                remainingDays
+              )?.toString()} over`}</span>
+            </span>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </div>

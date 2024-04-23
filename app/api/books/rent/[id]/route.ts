@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Book from "@/app/(models)/Book";
 import { AddDays } from "@/app/(general)/datetime";
+import exp from "constants";
 
 type RentalInfo = {
   rent_date: Date;
   user_name: String;
   user_email: String;
+  extend?: boolean;
 };
 
 export async function PUT(
@@ -17,10 +19,19 @@ export async function PUT(
     const rentalInfo: RentalInfo = await req.json();
 
     foundBook.rental_info.rent_available = false;
-    foundBook.rental_info.expected_return_date = AddDays(
-      rentalInfo.rent_date,
-      14
-    ).setHours(23, 59, 59);
+
+    if (rentalInfo.extend) {
+      foundBook.rental_info.expected_return_date = AddDays(
+        rentalInfo.rent_date,
+        21
+      ).setHours(23, 59, 59);
+    } else {
+      foundBook.rental_info.expected_return_date = AddDays(
+        rentalInfo.rent_date,
+        14
+      ).setHours(23, 59, 59);
+    }
+
     foundBook.rental_info.return_date = "";
     foundBook.rental_info.rent_date = rentalInfo.rent_date;
     foundBook.rental_info.user_name = rentalInfo.user_name;

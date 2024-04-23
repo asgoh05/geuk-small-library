@@ -8,6 +8,12 @@ export function SubstractDays(date: Date, days: number): Date {
   return new Date(_date.setDate(_date.getDate() - days));
 }
 
+export function SubstractDate(dateA: Date, dateB: Date): number {
+  const _dateA = new Date(dateA).getTime();
+  const _dateB = new Date(dateB).getTime();
+  return Math.floor((_dateA - _dateB) / (24 * 60 * 60 * 1000));
+}
+
 export function RemainingDays(future_date: Date): number {
   return Math.floor(
     (future_date.getTime() - new Date(Date.now()).getTime()) /
