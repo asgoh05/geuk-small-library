@@ -67,7 +67,7 @@ const schema = [
   {
     column: "reg_date",
     type: Date,
-    format: "yyyy-mm-dd",
+    format: "mm/dd/yyyy",
     value: (book: IBookInternal) => new Date(book.reg_date),
   },
   {
