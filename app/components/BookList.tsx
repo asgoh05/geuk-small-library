@@ -122,16 +122,28 @@ export default function BookList() {
           })} */}
           {books && !showMybook ? (
             <PaginatedBooks
-              books={books.filter(
-                (book) =>
-                  book.manage_id.includes(manageId) &&
-                  book.title.includes(searchKey)
-              )}
+              books={books
+                .filter(
+                  (book) =>
+                    book.manage_id.includes(manageId) &&
+                    book.title.includes(searchKey)
+                )
+                .sort((a, b) =>
+                  b.manage_id
+                    .substring(b.manage_id.length - 5)
+                    .localeCompare(
+                      a.manage_id.substring(a.manage_id.length - 5)
+                    )
+                )}
               userRentalBooks={userRentalBooks}
             />
           ) : books && showMybook ? (
             <PaginatedBooks
-              books={userRentalBooks}
+              books={userRentalBooks.sort((a, b) =>
+                b.manage_id
+                  .substring(b.manage_id.length - 5)
+                  .localeCompare(a.manage_id.substring(a.manage_id.length - 5))
+              )}
               userRentalBooks={userRentalBooks}
             />
           ) : (
