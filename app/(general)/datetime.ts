@@ -26,17 +26,15 @@ export function IsSameDate(dateA: Date, dateB: Date): boolean {
 }
 
 export function getDateString(date: Date): string {
-  if (!(date instanceof Date)) {
-    const d = new Date(date);
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1, 2)}-${pad(
-      d.getDay(),
-      2
-    )}`;
-  }
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1, 2)}-${pad(
-    date.getDay(),
-    2
-  )}`;
+  const dateFormat =
+    date.getFullYear() +
+    "-" +
+    (date.getMonth() + 1 < 9
+      ? "0" + (date.getMonth() + 1)
+      : date.getMonth() + 1) +
+    "-" +
+    (date.getDate() < 9 ? "0" + date.getDate() : date.getDate());
+  return dateFormat;
 }
 
 export function pad(num: number, size: number): string {
