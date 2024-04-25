@@ -2,6 +2,7 @@
 import SignInButton from "@/app/components/SignInButton";
 import { useSession } from "next-auth/react";
 import BookList from "./BookList";
+import Link from "next/link";
 
 export default function MainPage() {
   const { data: session } = useSession();
@@ -14,7 +15,15 @@ export default function MainPage() {
             <p className="w-full text-xs">
               {session?.user?.name}님, 환영합니다
             </p>
-            <SignInButton />
+            <div className="flex justify-center items-center gap-8">
+              <Link
+                className="hidden lg:block text-xs w-16 rounded-lg border px-2 py-2 text-center"
+                href={"/admin"}
+              >
+                관리자
+              </Link>
+              <SignInButton />
+            </div>
           </div>
         </div>
         <div className="flex flex-col overflow-auto h-4/5 w-full pt-14">

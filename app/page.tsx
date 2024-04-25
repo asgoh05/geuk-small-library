@@ -2,6 +2,7 @@
 import MainPage from "./components/MainPage";
 import { useSession } from "next-auth/react";
 import SignInButton from "@/app/components/SignInButton";
+import Link from "next/link";
 
 export default function Home() {
   // const books: IBook[] = await fetchBooks();
@@ -19,7 +20,10 @@ export default function Home() {
           </div>
           <div className="">
             <p className="text-center p-4 text-2xl">GEUK Library</p>
-            <SignInButton />
+            <Link href={"/admin"}>관리자</Link>
+            <div>
+              <SignInButton />
+            </div>
           </div>
           <div className="pt-16 text-neutral-400">
             <p className="text-center text-xs">

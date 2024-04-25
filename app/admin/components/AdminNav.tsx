@@ -26,6 +26,12 @@ export default function AdminNav() {
           도서 추가 (Excel)
         </Link>
         <Link
+          className="rounded-full text-sm px-2 py-1 border hover:opacity-50"
+          href="/admin/export"
+        >
+          Export to Excel
+        </Link>
+        <Link
           className="rounded-full text-sm px-2 py-1 bg-red-200 hover:opacity-50"
           href="/"
         >

@@ -7,7 +7,7 @@ export default function SignInButton() {
   if (session && session.user) {
     return (
       <button
-        className="border w-24 text-xs p-2 rounded-lg hover:bg-neutral-50"
+        className="border w-24 text-xs p-2 rounded-lg bg-red-50 hover:bg-red-100"
         onClick={() => signOut()}
       >
         Log Out

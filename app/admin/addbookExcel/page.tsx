@@ -191,8 +191,10 @@ export default function AddBookExcelPage() {
   }
 
   return (
-    <div className="pt-8">
+    <div className="pt-16">
+      <h1 className="p-4 text-center">도서 추가하기 EXCEL</h1>
       <input
+        className="pb-12 text-center"
         ref={fileRef}
         type="file"
         onChange={readFile}
