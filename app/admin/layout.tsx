@@ -1,4 +1,5 @@
 import AdminNav from "./components/AdminNav";
+import AdminPasswordWrap from "./components/AdminPasswordWrap";
 
 export default function RootLayout({
   children,
@@ -7,10 +8,12 @@ export default function RootLayout({
 }) {
   return (
     <div className="flex justify-center">
-      <div className="w-3/4 py-12">
-        <AdminNav />
-        {children}
-      </div>
+      <AdminPasswordWrap>
+        <div className="h-screen w-screen p-14">
+          <AdminNav />
+          {children}
+        </div>
+      </AdminPasswordWrap>
     </div>
   );
 }

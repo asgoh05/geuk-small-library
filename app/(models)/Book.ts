@@ -42,7 +42,7 @@ const bookSchema = new Schema({
   title: { type: String, required: true },
   author: { type: String, required: true },
   img_url: { type: String, required: false, default: "" },
-  reg_date: { type: Date, required: false, default: null },
+  reg_date: { type: Date, required: true, default: null },
   comments: { type: String, required: false, default: "" },
   rental_info: {
     rent_available: { type: Boolean, required: false, default: true },
