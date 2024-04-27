@@ -20,7 +20,6 @@ export default function Home() {
           </div>
           <div className="">
             <p className="text-center p-4 text-2xl">GEUK Library</p>
-            <Link href={"/admin"}>관리자</Link>
             <div>
               <SignInButton />
             </div>
