@@ -4,6 +4,7 @@ import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import PaginatedBooks from "./PaginatedBooks";
 import RentalInfoModal from "./RentalInfoModal";
+import BookIDInput from "./BookIDInput";
 
 export default function BookList() {
   const { data: session } = useSession();
@@ -35,7 +36,7 @@ export default function BookList() {
   }, [books, session]);
 
   function searchById(bookid: string) {
-    setManageId(`GEUK_BOOK_${bookid}`);
+    setManageId(bookid);
     // setFilteredBooks(
     //   books.filter((book) => book.manage_id.includes(`GEUK_BOOK_${bookid}`))
     // );
@@ -90,10 +91,7 @@ export default function BookList() {
           </div>
           <div className="flex items-center py-2 w-full flex-nowrap">
             <p className="text-sm min-w-24">도서 번호:</p>
-            <p className="text-neutral-500 text-sm align-bottom pr-1">
-              GEUK_BOOK_
-            </p>
-            <FourDigitInput id="fourDigitInput" onValueChanged={searchById} />
+            <BookIDInput id="bookidInput" onValueChanged={searchById} />
           </div>
           <div className="flex items-center justify-start pb-2">
             <p className="text-sm min-w-24">책 이름:</p>

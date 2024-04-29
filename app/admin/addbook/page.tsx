@@ -1,6 +1,7 @@
 "use client";
 import { BaseSyntheticEvent, useState } from "react";
 import FourDigitInput from "@/app/components/FourDigitInput";
+import BookIDInput from "@/app/components/BookIDInput";
 
 export default function AddBookPage() {
   const initFormData = {
@@ -49,7 +50,7 @@ export default function AddBookPage() {
   function setManageID(bookid: String) {
     setFormData((preState) => ({
       ...preState,
-      manage_id: `GEUK_BOOK_${bookid}`,
+      manage_id: bookid,
     }));
   }
 
@@ -80,8 +81,7 @@ export default function AddBookPage() {
           <label className="p-2 min-w-32" htmlFor="manage_id">
             <sup className="text-red-700">*</sup>도서 번호
           </label>
-          <p className="align-bottom text-neutral-600">GEUK_BOOK_</p>
-          <FourDigitInput id="fourdigitinput" onValueChanged={setManageID} />
+          <BookIDInput id="fourdigitinput" onValueChanged={setManageID} />
         </div>
         <div className="flex justify-between">
           <label className="p-2 min-w-32" htmlFor="title">
