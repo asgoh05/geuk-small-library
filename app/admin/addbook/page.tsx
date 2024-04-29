@@ -50,7 +50,7 @@ export default function AddBookPage() {
   function setManageID(bookid: String) {
     setFormData((preState) => ({
       ...preState,
-      manage_id: bookid,
+      manage_id: `${bookid}`,
     }));
   }
 
