@@ -26,6 +26,9 @@ export function IsSameDate(dateA: Date, dateB: Date): boolean {
 }
 
 export function getDateString(date: Date): string {
+  if (!(date instanceof Date)) {
+    date = new Date(date);
+  }
   const dateFormat =
     date.getFullYear() +
     "-" +
