@@ -41,6 +41,21 @@ export default function InitRentalInfoPage() {
     }
   };
 
+  const initAll = async () => {
+    if (
+      confirm("이 기능은 모든 도서의 대여정보를 삭제합니다. 진행하시겠습니까? ")
+    ) {
+      const res = await fetch("/api/books/insert_bulk", { method: "PUT" });
+      if (res.status === 200 || res.status === 201) {
+        setMessage("Initialized all rental information");
+        setTimeout(() => setMessage(""), 3000);
+      } else {
+        setMessage("Server Error");
+        setTimeout(() => setMessage(""), 3000);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-between p-8 gap-10">
       대여정보 초기화
@@ -110,6 +125,14 @@ export default function InitRentalInfoPage() {
       ) : (
         ""
       )}
+      <div className="flex justify-center">
+        <button
+          className="border rounded-xl text-red-700 px-2 py-1 hover:bg-red-100"
+          onClick={initAll}
+        >
+          전체 초기화
+        </button>
+      </div>
     </div>
   );
 }

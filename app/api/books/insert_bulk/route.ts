@@ -68,3 +68,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Error", err }, { status: 500 });
   }
 }
+
+// init bulk retal info
+export async function PUT(req: NextRequest) {
+  try {
+    await Book.updateMany(
+      {},
+      {
+        "rental_info.rent_available": true,
+        "rental_info.rent_date": null,
+        "rental_info.expected_return_date": null,
+        "rental_info.return_date": null,
+        "rental_info.user_name": "",
+        "retnal_info.user_email": "",
+      }
+    );
+    return NextResponse.json({ message: `All Books Updated` }, { status: 201 });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json({ message: "Error", err }, { status: 500 });
+  }
+}
