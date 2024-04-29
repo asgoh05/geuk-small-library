@@ -32,6 +32,12 @@ export default function AdminNav() {
           Export to Excel
         </Link>
         <Link
+          className="rounded-full text-sm px-2 py-1 border hover:opacity-50"
+          href="/admin/init_rental"
+        >
+          대여정보 초기화
+        </Link>
+        <Link
           className="rounded-full text-sm px-2 py-1 bg-red-200 hover:opacity-50"
           href="/"
         >

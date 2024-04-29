@@ -23,7 +23,7 @@ export default function BookList() {
         setBooks(books);
         setLoading(false);
 
-        if (books) {
+        if (books && books.length > 0) {
           const rentalBook = books.filter(
             (book: IBook) =>
               !book.rental_info.rent_available &&
@@ -120,7 +120,7 @@ export default function BookList() {
               </div>
             );
           })} */}
-          {books && !showMybook ? (
+          {books && books.length > 0 && !showMybook ? (
             <PaginatedBooks
               books={books
                 .filter(
@@ -137,7 +137,7 @@ export default function BookList() {
                 )}
               userRentalBooks={userRentalBooks}
             />
-          ) : books && showMybook ? (
+          ) : books && books.length > 0 && showMybook ? (
             <PaginatedBooks
               books={userRentalBooks.sort((a, b) =>
                 b.manage_id
@@ -147,7 +147,7 @@ export default function BookList() {
               userRentalBooks={userRentalBooks}
             />
           ) : (
-            "ServerError"
+            <div>ServerError</div>
           )}
         </div>
       )}

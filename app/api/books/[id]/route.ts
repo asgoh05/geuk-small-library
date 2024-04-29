@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Book from "@/app/(models)/Book";
+import Book, { IBookInternal } from "@/app/(models)/Book";
 
 export async function GET(
   req: NextRequest,
@@ -16,11 +16,24 @@ export async function PUT(
   { params }: { params: { id: String } }
 ) {
   try {
-    const foundBook = await Book.findOne({ manage_id: params.id });
-    const newBookData = await req.json();
+    const foundBook = await Book.findOne({
+      manage_id: params.id,
+    });
+    const newBookData = (await req.json()) as IBookInternal;
 
     foundBook.title = newBookData.title;
     foundBook.author = newBookData.author;
+    foundBook.comments = newBookData.comments;
+    foundBook.img_url = newBookData.img_url;
+    foundBook.reg_date = newBookData.reg_date;
+    foundBook.rental_info.user_name = newBookData.rental_info.user_name;
+    foundBook.rental_info.user_email = newBookData.rental_info.user_email;
+    foundBook.rental_info.rent_date = newBookData.rental_info.rent_date;
+    foundBook.rental_info.expected_return_date =
+      newBookData.rental_info.expected_return_date;
+    foundBook.rental_info.return_date = newBookData.rental_info.return_date;
+    foundBook.rental_info.rent_available =
+      newBookData.rental_info.rent_available;
     foundBook.save();
 
     return NextResponse.json({ message: "Book Updated" }, { status: 200 });
