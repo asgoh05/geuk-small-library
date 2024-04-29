@@ -3,6 +3,7 @@ import SignInButton from "@/app/components/SignInButton";
 import { useSession } from "next-auth/react";
 import BookList from "./BookList";
 import Link from "next/link";
+import { FaBookBookmark } from "react-icons/fa6";
 
 export default function MainPage() {
   const { data: session } = useSession();
@@ -12,7 +13,8 @@ export default function MainPage() {
       <main className="flex min-h-screen flex-col items-center justify-between pb-4 px-4">
         <div className="fixed z-10 bg-white border py-2">
           <div className="flex w-screen px-8 justify-between items-center">
-            <p className="w-full text-xs">
+            <p className="w-full text-xs flex gap-2 items-end">
+              <FaBookBookmark className="text-xl" />
               {session?.user?.name}님, 환영합니다
             </p>
             <div className="flex justify-center items-center gap-8">

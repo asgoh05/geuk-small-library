@@ -49,7 +49,7 @@ export default function BookIdInput({ id, onValueChanged }: BookIdInputProp) {
   };
   return (
     <div className="flex justify-end items-end">
-      <p className=" text-neutral-600 text-end text-lg">GEUK_</p>
+      <p className=" text-neutral-600 text-end text-sm">GEUK_</p>
       <NativeSelect
         sx={{ width: 1, fontSize: "0.9rem" }}
         onChange={typeChanged}
