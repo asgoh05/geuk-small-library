@@ -121,9 +121,9 @@ export default function BookCard({
       {openDetailModal && (
         <BookDetailsModal book={book} toggleModal={handleModal} />
       )}
-      <div className="max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 z-0">
+      <div className="bg-white max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 z-0">
         {isMyBook && !book.rental_info.rent_available ? (
-          <p className="text-xs absolute rounded-e-full bg-red-600 text-white px-1">
+          <p className="text-xs absolute rounded-e-full bg-red-600 text-white px-1 -m-0.5">
             대여중
           </p>
         ) : (
@@ -159,7 +159,14 @@ export default function BookCard({
             (book.rental_info.rent_available &&
               book.rental_info.user_email === session?.user?.email &&
               RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0) ? (
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2 shadow-md hover:shadow-inner">
+            <span
+              className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2 shadow-md hover:shadow-inner"
+              onClick={() =>
+                alert(
+                  "반납하신 책은 '반납일 익일' 까지 다시 대여하실 수 없습니다"
+                )
+              }
+            >
               대여하기
             </span>
           ) : (

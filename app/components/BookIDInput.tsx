@@ -48,17 +48,17 @@ export default function BookIdInput({ id, onValueChanged }: BookIdInputProp) {
     }
   };
   return (
-    <div className="flex justify-end items-end">
-      <p className=" text-neutral-600 text-end text-sm">GEUK_</p>
+    <div className="flex justify-end items-center rounded-md">
+      <p className=" text-black text-end text-sm">GEUK_</p>
       <NativeSelect
-        sx={{ width: 1, fontSize: "0.9rem" }}
+        sx={{ width: 0.9, fontSize: "0.85rem" }}
         onChange={typeChanged}
         defaultValue={type}
       >
         <option value="BOOK">BOOK</option>
         <option value="job">직무</option>
       </NativeSelect>
-      <p className="items-baseline text-neutral-600 text-lg">_</p>
+      <p className="items-baseline text-sm">_</p>
       <input
         id={id}
         className="w-full border border-neutral-200 rounded indent-1 pl-0"

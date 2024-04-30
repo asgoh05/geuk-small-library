@@ -51,7 +51,7 @@ export default function PaginatedBooks({
       <div className="flex justify-center pt-8 items-center gap-3">
         {curPage > 1 ? (
           <CiCircleChevLeft
-            className="text-3xl hover:text-blue-500 cursor-pointer"
+            className="text-3xl text-white hover:text-blue-500 cursor-pointer"
             onClick={() => {
               if (curPage > 1) {
                 setCurPage((prev) => curPage - 1);
@@ -59,21 +59,21 @@ export default function PaginatedBooks({
             }}
           />
         ) : (
-          <CiCircleChevLeft className="text-3xl text-neutral-200" />
+          <CiCircleChevLeft className="text-3xl text-white" />
         )}
 
-        <p className="text-sm">
+        <p className="text-sm text-white">
           {curPage} / {pageCount}
         </p>
         {curPage < pageCount ? (
           <CiCircleChevRight
-            className="text-3xl hover:text-blue-500 cursor-pointer"
+            className="text-3xl text-white hover:text-blue-500 cursor-pointer"
             onClick={() => {
               if (curPage < pageCount) setCurPage((prev) => curPage + 1);
             }}
           />
         ) : (
-          <CiCircleChevRight className="text-3xl text-neutral-200" />
+          <CiCircleChevRight className="text-3xl text-white" />
         )}
       </div>
     </>

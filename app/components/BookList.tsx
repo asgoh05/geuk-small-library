@@ -58,31 +58,31 @@ export default function BookList() {
           toggleModal={() => setOpenRentalInfoModal(false)}
         />
       )}
-      <div className="max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 m-1 mb-4">
-        <div className="px-6 py-4 bg-gray-50">
+      <div className="max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 bg-cyan-800 bg-opacity-90 mb-4">
+        <div className="px-6 py-4">
           <div className="flex justify-between items-center gap-2">
-            <p className="font-bold mb-2 max-w-60">도서 검색</p>
-            <p className="relative bottom-8 text-gray-500 align-middle text-xs">
+            <p className="font-bold mb-2 max-w-60 text-white">도서 검색</p>
+            <p className="relative bottom-8 text-gray-300 align-middle text-xs">
               {userRentalBooks.length}/3권 대여중
             </p>
             <div>
               {showMybook ? (
                 <div
-                  className="text-red-600 text-xs mb-2 rounded-full border py-1 px-2 shadow- hover:bg-neutral-200 cursor-pointer text-center"
+                  className="text-white bg-cyan-600 text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-cyan-900 cursor-pointer text-center"
                   onClick={() => setShowMybook(!showMybook)}
                 >
                   내 책 보기
                 </div>
               ) : (
                 <div
-                  className="text-black text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-neutral-200 cursor-pointer text-center"
+                  className="text-white text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-cyan-900 cursor-pointer text-center"
                   onClick={() => setShowMybook(!showMybook)}
                 >
                   내 책 보기
                 </div>
               )}
               <div
-                className="text-black text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-neutral-200 cursor-pointer"
+                className="text-white text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-cyan-900 cursor-pointer"
                 onClick={() => setOpenRentalInfoModal(true)}
               >
                 모든 대여정보
@@ -90,14 +90,14 @@ export default function BookList() {
             </div>
           </div>
           <div className="flex items-center py-2 w-full flex-nowrap">
-            <p className="text-sm min-w-24">도서 번호:</p>
+            <p className="text-sm min-w-24 text-white">도서 번호:</p>
             <BookIDInput id="bookidInput" onValueChanged={searchById} />
           </div>
           <div className="flex items-center justify-start pb-2">
-            <p className="text-sm min-w-24">책 이름:</p>
+            <p className="text-sm min-w-24 text-white">책 이름:</p>
             <input
               type="text"
-              className="w-full border border-neutral-200 rounded indent-1"
+              className="w-full border border-neutral-200 rounded indent-1 bg-white"
               value={searchKey}
               onChange={searchByKeyword}
             />
@@ -107,7 +107,7 @@ export default function BookList() {
 
       {isLoading ? (
         <div className="flex flex-col h-screen justify-center pb-30">
-          <p className="text-center h-1/2">Loading...</p>
+          <p className="text-center h-1/2 text-white">Loading...</p>
         </div>
       ) : (
         <div>
