@@ -68,7 +68,7 @@ export default function BookList() {
             <div>
               {showMybook ? (
                 <div
-                  className="text-white bg-cyan-600 text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-cyan-900 cursor-pointer text-center"
+                  className="text-red-600 bg-cyan-600 text-xs mb-2 rounded-full border py-1 px-2 shadow-md hover:bg-cyan-900 cursor-pointer text-center"
                   onClick={() => setShowMybook(!showMybook)}
                 >
                   내 책 보기

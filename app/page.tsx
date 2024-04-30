@@ -7,7 +7,7 @@ export default function Home() {
   // const books: IBook[] = await fetchBooks();
   const { data: session } = useSession();
   return (
-    <div className="w-full bg-[url('/Lot-of-books-in-library_1920x1080.jpg')]">
+    <div className="w-full bg-[url('/library_downloaded2.png')] bg-cover">
       {session && session.user ? (
         // 로그인 되었을 때
         <MainPage />
