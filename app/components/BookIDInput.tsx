@@ -51,7 +51,12 @@ export default function BookIdInput({ id, onValueChanged }: BookIdInputProp) {
     <div className="flex justify-end items-center rounded-md bg-cyan-800 bg-opacity-40 px-1">
       <p className="text-white text-end text-sm">GEUK_</p>
       <NativeSelect
-        sx={{ width: 0.9, fontSize: "0.85rem", color: "#FFFFFF" }}
+        sx={{
+          width: 0.9,
+          fontSize: "0.85rem",
+          color: "#FFFFFF",
+          backgroundColor: "#155e75",
+        }}
         onChange={typeChanged}
         defaultValue={type}
       >
