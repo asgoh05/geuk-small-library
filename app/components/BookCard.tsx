@@ -154,11 +154,10 @@ export default function BookCard({
             >
               반납하기
             </span>
-          ) : (!isMyBook && noRentBook === 3) ||
-            // 한번 대여한 책은 다음날까지 대여할 수 없음
-            (book.rental_info.rent_available &&
-              book.rental_info.user_email === session?.user?.email &&
-              RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0) ? (
+          ) : // 한번 대여한 책은 다음날까지 대여할 수 없음
+          book.rental_info.rent_available &&
+            book.rental_info.user_email === session?.user?.email &&
+            RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0 ? (
             <span
               className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2 shadow-md hover:shadow-inner"
               onClick={() =>
@@ -167,6 +166,12 @@ export default function BookCard({
                 )
               }
             >
+              대여하기
+            </span>
+          ) : // 대여중이거나 내가 빌린 책이 이미 3개인 경우
+          !book.rental_info.rent_available ||
+            (!isMyBook && noRentBook === 3) ? (
+            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2 shadow-md hover:shadow-inner">
               대여하기
             </span>
           ) : (
