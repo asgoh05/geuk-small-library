@@ -6,9 +6,16 @@ import PaginatedBooks from "./PaginatedBooks";
 import RentalInfoModal from "./RentalInfoModal";
 import BookIDInput from "./BookIDInput";
 
+const getBooks = async () => {
+  const response = await fetch("/api/books");
+  if (!response.ok) {
+    throw new Error("도서 데이터를 가져오는 데 실패했습니다.");
+  }
+  return response.json();
+};
+
 export default function BookList() {
   const { data: session } = useSession();
-  // const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
   const [manageId, setManageId] = useState("");
   const [books, setBooks] = useState<IBook[]>([]);
   const [searchKey, setSearchKey] = useState("");
@@ -18,12 +25,10 @@ export default function BookList() {
   const [openRentalInfoModal, setOpenRentalInfoModal] = useState(false);
 
   useEffect(() => {
-    fetch("/api/books")
-      .then((res) => res.json())
+    getBooks()
       .then((books: IBook[]) => {
         setBooks(books);
         setLoading(false);
-
         if (books && books.length > 0) {
           const rentalBook = books.filter(
             (book: IBook) =>
@@ -32,24 +37,18 @@ export default function BookList() {
           );
           setUserRentalBooks(rentalBook);
         }
-      });
-  }, [books, session]);
+      })
+      .catch((error) => console.error("도서 데이터 로딩 오류:", error));
+  }, [session]);
 
   function searchById(bookid: string) {
     setManageId(bookid);
-    // setFilteredBooks(
-    //   books.filter((book) => book.manage_id.includes(`GEUK_BOOK_${bookid}`))
-    // );
-    // setSearchKey("");
   }
 
   function searchByKeyword(e: BaseSyntheticEvent) {
-    // e.preventDefault();
     setSearchKey(e.target.value);
-    // setFilteredBooks(
-    //   books.filter((book) => book.title.includes(e.target.value))
-    // );
   }
+
   return (
     <div>
       {openRentalInfoModal && (
@@ -111,13 +110,6 @@ export default function BookList() {
         </div>
       ) : (
         <div>
-          {/* {filteredBooks.map((book) => {
-            return (
-              <div key={book._id} className="max-w-sm w-full m-1">
-                <BookCard book={book} hasRentalBook={userRentalBook !== null} />
-              </div>
-            );
-          })} */}
           {books && books.length > 0 && !showMybook ? (
             <PaginatedBooks
               books={books
