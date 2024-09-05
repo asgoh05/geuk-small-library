@@ -14,12 +14,14 @@ export interface BookCardProps {
   book: IBook;
   isMyBook: boolean;
   noRentBook: number;
+  onBookUpdate: () => void;
 }
 
 export default function BookCard({
   book,
   isMyBook,
   noRentBook,
+  onBookUpdate,
 }: BookCardProps) {
   const { data: session } = useSession();
   const router = useRouter();
@@ -50,7 +52,7 @@ export default function BookCard({
         });
         if (res.status === 200) {
           alert("반납을 완료하였습니다");
-          window.location.reload();
+          onBookUpdate();
         } else {
           alert(
             `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
@@ -77,7 +79,7 @@ export default function BookCard({
         });
         if (res.status === 200) {
           alert("대여를 완료하였습니다");
-          window.location.reload();
+          onBookUpdate();
         } else {
           alert(
             `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
@@ -105,6 +107,7 @@ export default function BookCard({
         });
         if (res.status === 200) {
           alert("대여 연장을 완료하였습니다");
+          onBookUpdate();
         } else {
           alert(
             `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`

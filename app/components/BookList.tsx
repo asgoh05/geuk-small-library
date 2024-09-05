@@ -1,18 +1,10 @@
 import { IBook } from "../(models)/Book";
 import FourDigitInput from "./FourDigitInput";
-import { BaseSyntheticEvent, useEffect, useState } from "react";
+import { BaseSyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import PaginatedBooks from "./PaginatedBooks";
 import RentalInfoModal from "./RentalInfoModal";
 import BookIDInput from "./BookIDInput";
-
-const getBooks = async () => {
-  const response = await fetch("/api/books");
-  if (!response.ok) {
-    throw new Error("도서 데이터를 가져오는 데 실패했습니다.");
-  }
-  return response.json();
-};
 
 export default function BookList() {
   const { data: session } = useSession();
@@ -24,22 +16,27 @@ export default function BookList() {
   const [showMybook, setShowMybook] = useState(false);
   const [openRentalInfoModal, setOpenRentalInfoModal] = useState(false);
 
+  const getBooks = async () => {
+    const response = await fetch("/api/books");
+    if (!response.ok) {
+      throw new Error("도서 데이터를 가져오는 데 실패했습니다.");
+    }
+    const books = (await response.json()) as IBook[];
+    setBooks(books);
+    setLoading(false);
+    if (books && books.length > 0) {
+      const rentalBook = books.filter(
+        (book: IBook) =>
+          !book.rental_info.rent_available &&
+          book.rental_info.user_email === session?.user?.email
+      );
+      setUserRentalBooks(rentalBook);
+    }
+  };
+
   useEffect(() => {
-    getBooks()
-      .then((books: IBook[]) => {
-        setBooks(books);
-        setLoading(false);
-        if (books && books.length > 0) {
-          const rentalBook = books.filter(
-            (book: IBook) =>
-              !book.rental_info.rent_available &&
-              book.rental_info.user_email === session?.user?.email
-          );
-          setUserRentalBooks(rentalBook);
-        }
-      })
-      .catch((error) => console.error("도서 데이터 로딩 오류:", error));
-  }, [session]);
+    getBooks();
+  });
 
   function searchById(bookid: string) {
     setManageId(bookid);
@@ -126,6 +123,7 @@ export default function BookList() {
                     )
                 )}
               userRentalBooks={userRentalBooks}
+              onBookUpdate={getBooks}
             />
           ) : books && books.length > 0 && showMybook ? (
             <PaginatedBooks
@@ -135,6 +133,7 @@ export default function BookList() {
                   .localeCompare(a.manage_id.substring(a.manage_id.length - 5))
               )}
               userRentalBooks={userRentalBooks}
+              onBookUpdate={getBooks}
             />
           ) : (
             <div>ServerError</div>

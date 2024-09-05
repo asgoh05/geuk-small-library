@@ -7,11 +7,13 @@ import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci";
 interface PaginatedBooksProps {
   books: IBook[];
   userRentalBooks: IBook[];
+  onBookUpdate: () => void;
 }
 
 export default function PaginatedBooks({
   books,
   userRentalBooks,
+  onBookUpdate,
 }: PaginatedBooksProps) {
   const [curPage, setCurPage] = useState(1);
 
@@ -43,6 +45,7 @@ export default function PaginatedBooks({
                     ) !== undefined
                   }
                   noRentBook={userRentalBooks.length}
+                  onBookUpdate={onBookUpdate}
                 />
               </div>
             );
