@@ -1,5 +1,4 @@
 import { IBook } from "../(models)/Book";
-import FourDigitInput from "./FourDigitInput";
 import { BaseSyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import PaginatedBooks from "./PaginatedBooks";
@@ -16,7 +15,8 @@ export default function BookList() {
   const [showMybook, setShowMybook] = useState(false);
   const [openRentalInfoModal, setOpenRentalInfoModal] = useState(false);
 
-  const getBooks = async () => {
+  const getBooks = useCallback(async () => {
+    setLoading(true);
     const response = await fetch("/api/books");
     if (!response.ok) {
       throw new Error("도서 데이터를 가져오는 데 실패했습니다.");
@@ -32,11 +32,11 @@ export default function BookList() {
       );
       setUserRentalBooks(rentalBook);
     }
-  };
+  }, [session?.user?.email]); // 의존성 배열 추가
 
   useEffect(() => {
     getBooks();
-  });
+  }, [getBooks]);
 
   function searchById(bookid: string) {
     setManageId(bookid);
