@@ -122,11 +122,11 @@ export default function BookCard({
   }
 
   return (
-    <div>
+    <div className="h-full">
       {openDetailModal && (
         <BookDetailsModal book={book} toggleModal={handleModal} />
       )}
-      <div className="bg-white max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 z-0">
+      <div className="h-full bg-white max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 z-0">
         {isMyBook && !book.rental_info.rent_available ? (
           <p className="text-xs absolute rounded-e-full bg-red-600 text-white px-1 -m-0.5">
             대여중

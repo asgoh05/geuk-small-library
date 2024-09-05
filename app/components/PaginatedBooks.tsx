@@ -16,24 +16,30 @@ export default function PaginatedBooks({
   onBookUpdate,
 }: PaginatedBooksProps) {
   const [curPage, setCurPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
-  const itemsPerPage = 12;
-  const pageCount =
-    Math.ceil(books.length / itemsPerPage) === 0
-      ? 1
-      : Math.ceil(books.length / itemsPerPage);
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(window.innerWidth >= 1500 ? 30 : 12);
+    };
+
+    handleResize(); // 초기 설정
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const pageCount = Math.ceil(books.length / itemsPerPage) || 1;
 
   if (curPage > pageCount) setCurPage(pageCount);
 
   return (
     <>
-      {/* <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 items-center"> */}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
         {books
-          .slice(
-            (curPage - 1) * itemsPerPage,
-            (curPage - 1) * itemsPerPage + itemsPerPage
-          )
+          .slice((curPage - 1) * itemsPerPage, curPage * itemsPerPage)
           .map((book) => {
             return (
               <div key={book._id}>
