@@ -17,7 +17,7 @@ export default function ExportPage() {
         setBooks(books);
       })
       .finally(() => setLoading(false));
-  }, [books]);
+  }, []);
 
   const today = new Date(Date.now());
   const fileName = `GEUK_Library_downloaded_${getDateString(today)}`;

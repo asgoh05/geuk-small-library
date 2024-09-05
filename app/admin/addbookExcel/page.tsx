@@ -23,7 +23,7 @@ export default function AddBookExcelPage() {
         setBooks(books);
         setLoading(false);
       });
-  }, [books]);
+  }, []);
 
   async function readFile(e: BaseSyntheticEvent) {
     const { files } = e.target;
