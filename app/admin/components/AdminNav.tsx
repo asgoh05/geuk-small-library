@@ -95,7 +95,7 @@ export default function AdminNav() {
       </div>
 
       {/* 네비게이션 그리드 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -142,37 +142,6 @@ export default function AdminNav() {
             </Link>
           );
         })}
-      </div>
-
-      {/* 통계 정보 (옵션) */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-blue-500">
-          <div className="flex items-center gap-3">
-            <FaBook className="text-blue-500 text-xl" />
-            <div>
-              <p className="text-sm text-gray-600">총 도서</p>
-              <p className="text-lg font-semibold text-gray-800">-</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-green-500">
-          <div className="flex items-center gap-3">
-            <FaUsers className="text-green-500 text-xl" />
-            <div>
-              <p className="text-sm text-gray-600">등록 사용자</p>
-              <p className="text-lg font-semibold text-gray-800">-</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-orange-500">
-          <div className="flex items-center gap-3">
-            <FaChartBar className="text-orange-500 text-xl" />
-            <div>
-              <p className="text-sm text-gray-600">대여 중</p>
-              <p className="text-lg font-semibold text-gray-800">-</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

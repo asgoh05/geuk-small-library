@@ -8,17 +8,24 @@ function validateKoreanName(name: string): boolean {
   return koreanNameRegex.test(name);
 }
 
+// 회사 이메일 유효성 검사 함수
+function validateCompanyEmail(email: string): boolean {
+  // @gehealthcare.com 도메인만 허용
+  const companyEmailRegex = /^[a-zA-Z0-9._%+-]+@gehealthcare\.com$/;
+  return companyEmailRegex.test(email);
+}
+
 export async function POST(req: NextRequest) {
   try {
     console.log("=== 회원가입 API 시작 ===");
 
     const body = await req.json();
-    const { real_name, email, google_id } = body;
+    const { real_name, email, company_email, google_id } = body;
 
-    console.log("받은 데이터:", { real_name, email, google_id });
+    console.log("받은 데이터:", { real_name, email, company_email, google_id });
 
     // 필수 필드 확인
-    if (!real_name || !email || !google_id) {
+    if (!real_name || !email || !company_email || !google_id) {
       console.log("필수 필드 누락");
       return NextResponse.json(
         { message: "모든 필드를 입력해주세요." },
@@ -35,11 +42,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 회사 이메일 유효성 검사
+    if (!validateCompanyEmail(company_email)) {
+      console.log("회사 이메일 유효성 검사 실패:", company_email);
+      return NextResponse.json(
+        { message: "@gehealthcare.com 도메인의 이메일을 입력해주세요." },
+        { status: 400 }
+      );
+    }
+
     console.log("기존 사용자 확인 중...");
 
     // 이미 등록된 사용자인지 확인 (이메일 또는 Google ID로)
     const existingUser = await LibraryUser.findOne({
-      $or: [{ email }, { google_id }],
+      $or: [{ email }, { google_id }, { company_email }],
     });
 
     if (existingUser) {
@@ -56,6 +72,7 @@ export async function POST(req: NextRequest) {
     const newUser = await LibraryUser.create({
       real_name,
       email,
+      company_email,
       google_id,
       registered_at: new Date(),
       banned: false, // 기본값은 정상 사용자
@@ -66,6 +83,7 @@ export async function POST(req: NextRequest) {
       _id: newUser._id,
       real_name: newUser.real_name,
       email: newUser.email,
+      company_email: newUser.company_email,
       banned: newUser.banned,
       admin: newUser.admin,
     });
@@ -76,6 +94,7 @@ export async function POST(req: NextRequest) {
         user: {
           real_name: newUser.real_name,
           email: newUser.email,
+          company_email: newUser.company_email,
           banned: newUser.banned,
           admin: newUser.admin,
         },
@@ -132,6 +151,7 @@ export async function GET(req: NextRequest) {
       user: {
         real_name: user.real_name,
         email: user.email,
+        company_email: user.company_email,
         registered_at: user.registered_at,
         banned: user.banned,
         admin: user.admin,

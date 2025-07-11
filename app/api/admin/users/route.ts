@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
       _id: user._id,
       real_name: user.real_name,
       email: user.email,
+      company_email: user.company_email,
       registered_at: user.registered_at,
       banned: user.banned,
       admin: user.admin,

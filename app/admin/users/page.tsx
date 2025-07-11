@@ -19,6 +19,7 @@ interface IUser {
   _id: string;
   real_name: string;
   email: string;
+  company_email: string;
   registered_at: string;
   banned: boolean;
   admin: boolean;
@@ -129,8 +130,14 @@ export default function UsersManagementPage() {
     },
     {
       field: "email",
-      headerName: "이메일",
-      width: 250,
+      headerName: "개인 이메일",
+      width: 220,
+      headerAlign: "center",
+    },
+    {
+      field: "company_email",
+      headerName: "회사 이메일",
+      width: 220,
       headerAlign: "center",
     },
     {

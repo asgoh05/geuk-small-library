@@ -8,14 +8,22 @@ export default function RegisterPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [realName, setRealName] = useState("");
+  const [companyEmail, setCompanyEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   // 한글 실명 유효성 검사
   const validateKoreanName = (name: string): boolean => {
     const koreanNameRegex = /^[가-힣]{2,4}$/;
     return koreanNameRegex.test(name);
+  };
+
+  // 회사 이메일 유효성 검사 (@gehealthcare.com)
+  const validateCompanyEmail = (email: string): boolean => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gehealthcare\.com$/;
+    return emailRegex.test(email);
   };
 
   // 실시간 이름 유효성 검사
@@ -30,6 +38,19 @@ export default function RegisterPage() {
       setNameError("");
     }
   }, [realName]);
+
+  // 실시간 회사 이메일 유효성 검사
+  useEffect(() => {
+    if (companyEmail.length > 0) {
+      if (!validateCompanyEmail(companyEmail)) {
+        setEmailError("@gehealthcare.com 도메인의 이메일을 입력해주세요.");
+      } else {
+        setEmailError("");
+      }
+    } else {
+      setEmailError("");
+    }
+  }, [companyEmail]);
 
   // 로그인하지 않은 사용자는 메인 페이지로 리다이렉트
   useEffect(() => {
@@ -51,6 +72,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!validateCompanyEmail(companyEmail)) {
+      setMessage("@gehealthcare.com 도메인의 회사 이메일을 입력해주세요.");
+      return;
+    }
+
     setIsSubmitting(true);
     setMessage("");
 
@@ -63,6 +89,7 @@ export default function RegisterPage() {
         body: JSON.stringify({
           real_name: realName.trim(),
           email: session.user.email,
+          company_email: companyEmail.trim(),
           google_id: session.user.email, // 임시로 email을 google_id로 사용
         }),
       });
@@ -145,9 +172,40 @@ export default function RegisterPage() {
             </p>
           </div>
 
+          <div>
+            <label
+              htmlFor="companyEmail"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              회사 이메일 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              id="companyEmail"
+              value={companyEmail}
+              onChange={(e) => setCompanyEmail(e.target.value)}
+              placeholder="예: hongkildong@gehealthcare.com"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+              disabled={isSubmitting}
+            />
+            {emailError && (
+              <p className="mt-1 text-sm text-red-600">{emailError}</p>
+            )}
+            <p className="mt-1 text-xs text-gray-500">
+              @gehealthcare.com 도메인의 회사 이메일을 입력해주세요
+            </p>
+          </div>
+
           <button
             type="submit"
-            disabled={isSubmitting || nameError !== "" || realName.length === 0}
+            disabled={
+              isSubmitting ||
+              nameError !== "" ||
+              emailError !== "" ||
+              realName.length === 0 ||
+              companyEmail.length === 0
+            }
             className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "가입 중..." : "가입하기"}
