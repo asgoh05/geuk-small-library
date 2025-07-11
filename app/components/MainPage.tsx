@@ -15,15 +15,17 @@ export default function MainPage() {
           <div className="flex w-screen px-6 justify-between items-center">
             <p className="w-full text-xs flex gap-2 items-end text-white">
               <FaBookBookmark className="text-xl text-white" />
-              {session?.user?.name}님, 환영합니다
+              {session?.user?.real_name}님, 환영합니다
             </p>
             <div className="flex justify-center items-center gap-8">
-              <Link
-                className="hidden text-white lg:block text-xs w-16 rounded-lg border px-2 py-2 text-center hover:bg-cyan-950"
-                href={"/admin"}
-              >
-                관리자
-              </Link>
+              {session?.user?.admin && (
+                <Link
+                  className="hidden text-white lg:block text-xs w-16 rounded-lg border px-2 py-2 text-center hover:bg-cyan-950"
+                  href={"/admin"}
+                >
+                  관리자
+                </Link>
+              )}
               <SignInButton />
             </div>
           </div>

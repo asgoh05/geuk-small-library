@@ -46,7 +46,7 @@ export default function BookCard({
           method: "PUT",
           body: JSON.stringify({
             return_date: Date.now(),
-            user_name: session?.user?.name,
+            user_name: session?.user?.real_name,
             user_email: session?.user?.email,
           }),
         });
@@ -73,7 +73,7 @@ export default function BookCard({
           method: "PUT",
           body: JSON.stringify({
             rent_date: Date.now(),
-            user_name: session?.user?.name,
+            user_name: session?.user?.real_name,
             user_email: session?.user?.email,
           }),
         });
@@ -100,7 +100,7 @@ export default function BookCard({
           method: "PUT",
           body: JSON.stringify({
             rent_date: book.rental_info.rent_date,
-            user_name: session?.user?.name,
+            user_name: session?.user?.real_name,
             user_email: session?.user?.email,
             extend: true,
           }),

@@ -30,7 +30,7 @@ export default function BookDetailsPage({
         <div className="flex w-screen px-8 justify-between items-center">
           <Link href="/" className="w-full text-xs">
             <p className="w-full text-xs">
-              {session?.user?.name}님, 환영합니다
+              {session?.user?.real_name}님, 환영합니다
             </p>
           </Link>
           <SignInButton />

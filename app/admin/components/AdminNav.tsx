@@ -38,6 +38,12 @@ export default function AdminNav() {
           대여정보 초기화
         </Link>
         <Link
+          className="rounded-full text-sm px-2 py-1 border hover:opacity-50"
+          href="/admin/users"
+        >
+          사용자 관리
+        </Link>
+        <Link
           className="rounded-full text-sm px-2 py-1 bg-red-200 hover:opacity-50"
           href="/"
         >

@@ -34,7 +34,10 @@ export interface IBookInternal {
   };
 }
 
-mongoose.connect(process.env.MONGODB_URI!);
+// mongoose 연결 확인 및 설정
+if (mongoose.connection.readyState === 0) {
+  mongoose.connect(process.env.MONGODB_URI!);
+}
 mongoose.Promise = global.Promise;
 
 const bookSchema = new Schema({

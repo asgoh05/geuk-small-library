@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import PaginatedBooks from "./PaginatedBooks";
 import RentalInfoModal from "./RentalInfoModal";
 import BookIDInput from "./BookIDInput";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function BookList() {
   const { data: session } = useSession();
@@ -102,8 +103,8 @@ export default function BookList() {
       </div>
 
       {isLoading ? (
-        <div className="flex flex-col h-screen justify-center pb-30">
-          <p className="text-center h-1/2 text-white">Loading...</p>
+        <div className="min-h-[400px]">
+          <LoadingSpinner message="도서 목록을 불러오는 중..." size="medium" />
         </div>
       ) : (
         <div>

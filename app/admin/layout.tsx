@@ -1,5 +1,5 @@
 import AdminNav from "./components/AdminNav";
-import AdminPasswordWrap from "./components/AdminPasswordWrap";
+import AdminGuard from "./components/AdminGuard";
 
 export default function RootLayout({
   children,
@@ -8,12 +8,12 @@ export default function RootLayout({
 }) {
   return (
     <div className="flex justify-center">
-      <AdminPasswordWrap>
+      <AdminGuard>
         <div className="h-screen w-screen p-14">
           <AdminNav />
           {children}
         </div>
-      </AdminPasswordWrap>
+      </AdminGuard>
     </div>
   );
 }
