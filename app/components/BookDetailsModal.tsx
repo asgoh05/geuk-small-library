@@ -1,4 +1,7 @@
 import { IBook } from "../(models)/Book";
+import { FaTimes } from "react-icons/fa";
+import { useEffect } from "react";
+
 interface BookDetailsModalProps {
   book: IBook;
   toggleModal: () => void;
@@ -8,15 +11,48 @@ export default function BookDetailsModal({
   book,
   toggleModal,
 }: BookDetailsModalProps) {
+  // ESC 키로 모달 닫기
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        toggleModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [toggleModal]);
+
+  // backdrop 클릭으로 모달 닫기
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      toggleModal();
+    }
+  };
+
   return (
-    <div className="fixed top-0 left-0 w-full h-full backdrop-blur-xl flex justify-center items-center z-10">
-      <div className="fixed min-w-80 max-w-96 bg-white shadow-lg py-2 rounded-md">
+    <div
+      className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-xl flex justify-center items-center z-50"
+      onClick={handleBackdropClick}
+    >
+      <div className="relative min-w-80 max-w-96 bg-white shadow-2xl py-2 rounded-xl border">
+        {/* 우측 상단 Close 버튼 */}
+        <button
+          type="button"
+          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600 text-white transition-colors duration-200 shadow-sm z-10"
+          onClick={toggleModal}
+        >
+          <FaTimes className="text-xs" />
+        </button>
+
         {book?.rental_info.rent_available ? (
-          <p className="absolute text-xs bg-green-300 p-1 rounded-full left-2">
+          <p className="absolute text-xs bg-cyan-300 text-cyan-800 p-1 rounded-full left-2 top-2 font-medium">
             대여 가능
           </p>
         ) : (
-          <p className="absolute text-xs bg-red-300 p-1 rounded-full left-2">
+          <p className="absolute text-xs bg-slate-300 text-slate-700 p-1 rounded-full left-2 top-2 font-medium">
             대여 불가
           </p>
         )}
@@ -72,19 +108,12 @@ export default function BookDetailsModal({
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-300 flex justify-between items-center mt-2 px-4 pt-2">
+        <div className="border-t border-gray-300 flex justify-center items-center mt-2 px-4 pt-2">
           <div className="text-sm font-medium text-gray-700">
             <p className="text-center text-xs pt-6 text-neutral-400">
               &copy; Ultrasound Korea, GE Healthcare
             </p>
           </div>
-          <button
-            type="button"
-            className="h-8 px-2 text-sm rounded-md bg-gray-700 text-white"
-            onClick={toggleModal}
-          >
-            Close
-          </button>
         </div>
       </div>
     </div>

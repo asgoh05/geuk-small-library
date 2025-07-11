@@ -1,14 +1,21 @@
-import { useSession } from "next-auth/react";
 import { IBook } from "../(models)/Book";
+import { AddDays, RemainingDays, SubstractDate } from "../(general)/datetime";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {
-  AddDays,
-  RemainingDays,
-  SubstractDate,
-  SubstractDays,
-} from "../(general)/datetime";
 import { useState } from "react";
 import BookDetailsModal from "./BookDetailsModal";
+import {
+  FaUser,
+  FaIdCard,
+  FaDownload,
+  FaUpload,
+  FaInfoCircle,
+  FaClock,
+  FaExclamationTriangle,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaCalendarPlus,
+} from "react-icons/fa";
 
 export interface BookCardProps {
   book: IBook;
@@ -33,11 +40,6 @@ export default function BookCard({
   const remainingDays = book.rental_info.expected_return_date
     ? RemainingDays(new Date(book.rental_info.expected_return_date))
     : null;
-
-  // const today = new Date(Date.now());
-  // const remainReturnDue = returnDueDate
-  //   ? returnDueDate.setDate(returnDueDate.getDate() - today.getDate())
-  //   : null;
 
   async function returnBook() {
     if (confirm(`책 "${book.title}"을 반납하시겠습니까?`)) {
@@ -121,119 +123,183 @@ export default function BookCard({
     } else return;
   }
 
+  // 상태에 따른 색상과 아이콘 결정
+  const getStatusConfig = () => {
+    if (book.rental_info.rent_available) {
+      return {
+        bgColor: "bg-gradient-to-r from-cyan-50 to-teal-50",
+        borderColor: "border-cyan-200",
+        statusIcon: <FaCheckCircle className="text-cyan-500" />,
+        statusText: "대여가능",
+        statusColor: "text-cyan-600",
+      };
+    } else {
+      return {
+        bgColor: "bg-gradient-to-r from-slate-50 to-gray-50",
+        borderColor: "border-slate-200",
+        statusIcon: <FaTimesCircle className="text-slate-500" />,
+        statusText: "대여중",
+        statusColor: "text-slate-600",
+      };
+    }
+  };
+
+  const statusConfig = getStatusConfig();
+
+  // 반납 기한 상태
+  const getDueDateConfig = () => {
+    if (!remainingDays || book.rental_info.rent_available) return null;
+
+    if (remainingDays > 0) {
+      return {
+        icon: <FaClock className="text-cyan-500" />,
+        text: `D-${remainingDays}`,
+        bgColor: "bg-cyan-100",
+        textColor: "text-cyan-700",
+      };
+    } else if (remainingDays === 0) {
+      return {
+        icon: <FaExclamationTriangle className="text-amber-500" />,
+        text: "Today",
+        bgColor: "bg-amber-100",
+        textColor: "text-amber-700",
+      };
+    } else {
+      return {
+        icon: <FaExclamationTriangle className="text-rose-500" />,
+        text: `D+${Math.abs(remainingDays)}`,
+        bgColor: "bg-rose-100",
+        textColor: "text-rose-700",
+      };
+    }
+  };
+
+  const dueDateConfig = getDueDateConfig();
+
   return (
     <div className="h-full">
       {openDetailModal && (
         <BookDetailsModal book={book} toggleModal={handleModal} />
       )}
-      <div className="h-full bg-white max-w-sm rounded-lg overflow-hidden shadow-md border gap-2 hover:bg-neutral-100 z-0">
-        {isMyBook && !book.rental_info.rent_available ? (
-          <p className="text-xs absolute rounded-e-full bg-red-600 text-white px-1 -m-0.5">
-            대여중
-          </p>
-        ) : (
-          ""
-        )}
-        <div className="px-6 py-4">
-          <div className="flex items-center">
-            <p className="font-bold mb-2 max-w-52">{book.title}&nbsp;&nbsp;</p>
-            <p className="text-gray-500 text-xs pl-4 min-w-9">{book.author}</p>
+
+      <div
+        className={`h-full max-w-sm rounded-xl overflow-hidden shadow-lg border-2 ${statusConfig.borderColor} ${statusConfig.bgColor} hover:shadow-xl transition-all duration-300 relative`}
+      >
+        {/* 대여중 뱃지 - 모달이 열려있지 않을 때만 표시 */}
+        {!openDetailModal && isMyBook && !book.rental_info.rent_available && (
+          <div className="absolute top-2 right-2 bg-cyan-500 text-white text-xs px-2 py-1 rounded-full font-medium z-10 shadow-md">
+            내 도서
           </div>
-          <p className="text-gray-500 text-xs">{book.manage_id}</p>
-        </div>
-        <div className="px-6 pb-2">
-          {book.rental_info.rent_available ? (
-            <span className="inline-block bg-green-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2 ">
-              #대여 가능
-            </span>
-          ) : (
-            <span className="inline-block bg-red-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
-              #대여 불가
-            </span>
+        )}
+
+        <div className="p-4">
+          {/* 헤더: 제목과 상태 */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1 pr-2">
+              <h3 className="font-bold text-gray-800 text-sm leading-tight mb-1 line-clamp-2">
+                {book.title}
+              </h3>
+              <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                <FaUser className="text-xs" />
+                <span className="truncate">{book.author}</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              {statusConfig.statusIcon}
+              <span
+                className={`text-xs font-medium ${statusConfig.statusColor}`}
+              >
+                {statusConfig.statusText}
+              </span>
+            </div>
+          </div>
+
+          {/* 도서 ID */}
+          <div className="flex items-center gap-1.5 mb-3 text-xs text-gray-500">
+            <FaIdCard className="text-xs" />
+            <span>{book.manage_id}</span>
+          </div>
+
+          {/* 반납 기한 정보 */}
+          {dueDateConfig && (
+            <div
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-lg mb-3 ${dueDateConfig.bgColor}`}
+            >
+              {dueDateConfig.icon}
+              <span
+                className={`text-xs font-medium ${dueDateConfig.textColor}`}
+              >
+                반납 {dueDateConfig.text}
+              </span>
+            </div>
           )}
 
-          {isMyBook && !book.rental_info.rent_available ? (
-            <span
-              className="inline-block bg-blue-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer shadow-md hover:shadow-inner"
-              onClick={returnBook}
-            >
-              반납하기
-            </span>
-          ) : // 한번 대여한 책은 다음날까지 대여할 수 없음
-          book.rental_info.rent_available &&
-            book.rental_info.user_email === session?.user?.email &&
-            RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0 ? (
-            <span
-              className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2 shadow-md hover:shadow-inner"
-              onClick={() =>
-                alert(
-                  "반납하신 책은 '반납일 익일' 까지 다시 대여하실 수 없습니다"
-                )
-              }
-            >
-              대여하기
-            </span>
-          ) : // 대여중이거나 내가 빌린 책이 이미 3개인 경우
-          !book.rental_info.rent_available ||
-            (!isMyBook && noRentBook === 3) ? (
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-2 shadow-md hover:shadow-inner">
-              대여하기
-            </span>
-          ) : (
-            <span
-              className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer shadow-md hover:shadow-inner"
-              onClick={rentBook}
-            >
-              대여하기
-            </span>
-          )}
-          <span
-            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer shadow-md hover:shadow-inner"
-            onClick={handleModal}
-          >
-            상세정보
-          </span>
-          {isMyBook &&
-          !book.rental_info.rent_available &&
-          SubstractDate(
-            book.rental_info.expected_return_date,
-            book.rental_info.rent_date
-          ) < 21 ? (
-            <span
-              className="inline-block bg-yellow-100 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2 hover:text-blue-500 cursor-pointer shadow-md hover:shadow-inner"
-              onClick={extendRent}
-            >
-              대여연장
-            </span>
-          ) : (
-            ""
-          )}
+          {/* 액션 버튼들 */}
+          <div className="flex gap-1.5">
+            {/* 대여/반납 버튼 */}
+            {isMyBook && !book.rental_info.rent_available ? (
+              <button
+                onClick={returnBook}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500 hover:bg-cyan-600 text-white text-xs rounded-lg transition-colors duration-200 font-medium shadow-sm"
+              >
+                <FaUpload className="text-xs" />
+                반납
+              </button>
+            ) : book.rental_info.rent_available &&
+              book.rental_info.user_email === session?.user?.email &&
+              RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0 ? (
+              <button
+                onClick={() =>
+                  alert(
+                    "반납하신 책은 '반납일 익일' 까지 다시 대여하실 수 없습니다"
+                  )
+                }
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-300 text-slate-500 text-xs rounded-lg font-medium cursor-not-allowed"
+              >
+                <FaDownload className="text-xs" />
+                대여불가
+              </button>
+            ) : !book.rental_info.rent_available ||
+              (!isMyBook && noRentBook === 3) ? (
+              <button className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-300 text-slate-500 text-xs rounded-lg font-medium cursor-not-allowed">
+                <FaDownload className="text-xs" />
+                대여불가
+              </button>
+            ) : (
+              <button
+                onClick={rentBook}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-500 hover:bg-teal-600 text-white text-xs rounded-lg transition-colors duration-200 font-medium shadow-sm"
+              >
+                <FaDownload className="text-xs" />
+                대여
+              </button>
+            )}
 
-          {!book.rental_info.rent_available &&
-          remainingDays !== null &&
-          remainingDays > 0 ? (
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
-              #반납기한{"  "}
-              <span className=" text-green-600 ">{`D-${remainingDays?.toString()}`}</span>
-            </span>
-          ) : !book.rental_info.rent_available &&
-            remainingDays !== null &&
-            remainingDays === 0 ? (
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
-              #반납기한{"  "} <span className=" text-red-600 ">Today</span>
-            </span>
-          ) : !book.rental_info.rent_available &&
-            remainingDays !== null &&
-            remainingDays < 0 ? (
-            <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-500 mr-2 mb-2">
-              #반납기한{"  "}
-              <span className=" text-red-600 ">{`D+${Math.abs(
-                remainingDays
-              )?.toString()} over`}</span>
-            </span>
-          ) : (
-            ""
-          )}
+            {/* 상세정보 버튼 */}
+            <button
+              onClick={handleModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-500 hover:bg-slate-600 text-white text-xs rounded-lg transition-colors duration-200 font-medium shadow-sm"
+            >
+              <FaInfoCircle className="text-xs" />
+              상세
+            </button>
+
+            {/* 대여연장 버튼 */}
+            {isMyBook &&
+              !book.rental_info.rent_available &&
+              SubstractDate(
+                book.rental_info.expected_return_date,
+                book.rental_info.rent_date
+              ) < 21 && (
+                <button
+                  onClick={extendRent}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs rounded-lg transition-colors duration-200 font-medium shadow-sm"
+                >
+                  <FaCalendarPlus className="text-xs" />
+                  연장
+                </button>
+              )}
+          </div>
         </div>
       </div>
     </div>
