@@ -47,16 +47,24 @@ export default function BookList({
     setBooks(books);
     setLoading(false);
     if (books && books.length > 0) {
+      const userEmails = [
+        session?.user?.email,
+        session?.user?.company_email,
+      ].filter(Boolean);
       const rentalBook = books.filter(
         (book: IBook) =>
           !book.rental_info.rent_available &&
-          book.rental_info.user_email === session?.user?.email
+          userEmails.includes(book.rental_info.user_email)
       );
       setUserRentalBooks(rentalBook);
       // 대여 권수를 부모 컴포넌트에 전달
       onUserRentalCountUpdate(rentalBook.length);
     }
-  }, [session?.user?.email, onUserRentalCountUpdate]);
+  }, [
+    session?.user?.email,
+    session?.user?.company_email,
+    onUserRentalCountUpdate,
+  ]);
 
   useEffect(() => {
     getBooks();

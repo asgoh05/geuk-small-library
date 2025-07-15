@@ -1,5 +1,5 @@
 import { IBook } from "../(models)/Book";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaExclamationTriangle } from "react-icons/fa";
 import { useEffect } from "react";
 
 interface BookDetailsModalProps {
@@ -81,7 +81,18 @@ export default function BookDetailsModal({
                 <i>{book?.rental_info.user_name}</i>
               </p>
               <p className="text-xs text-center text-neutral-500">
-                <i>{book?.rental_info.user_email}</i>
+                <i className="flex items-center justify-center gap-1">
+                  {book?.rental_info.user_email &&
+                    !book.rental_info.user_email.endsWith(
+                      "@gehealthcare.com"
+                    ) && (
+                      <FaExclamationTriangle
+                        className="text-amber-500"
+                        title="미등록 사용자"
+                      />
+                    )}
+                  {book?.rental_info.user_email}
+                </i>
               </p>
               <div className="flex flex-row gap-2 items-end pt-4">
                 <p className="text-xs">대여한 날짜 :</p>

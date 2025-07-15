@@ -49,7 +49,7 @@ export default function BookCard({
           body: JSON.stringify({
             return_date: Date.now(),
             user_name: session?.user?.real_name,
-            user_email: session?.user?.email,
+            user_email: session?.user?.company_email || session?.user?.email,
           }),
         });
         if (res.status === 200) {
@@ -76,7 +76,7 @@ export default function BookCard({
           body: JSON.stringify({
             rent_date: Date.now(),
             user_name: session?.user?.real_name,
-            user_email: session?.user?.email,
+            user_email: session?.user?.company_email || session?.user?.email,
           }),
         });
         if (res.status === 200) {
@@ -103,7 +103,7 @@ export default function BookCard({
           body: JSON.stringify({
             rent_date: book.rental_info.rent_date,
             user_name: session?.user?.real_name,
-            user_email: session?.user?.email,
+            user_email: session?.user?.company_email || session?.user?.email,
             extend: true,
           }),
         });
@@ -246,7 +246,8 @@ export default function BookCard({
                 반납
               </button>
             ) : book.rental_info.rent_available &&
-              book.rental_info.user_email === session?.user?.email &&
+              book.rental_info.user_email ===
+                (session?.user?.company_email || session?.user?.email) &&
               RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0 ? (
               <button
                 onClick={() =>

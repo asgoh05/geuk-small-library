@@ -25,6 +25,7 @@ const handler = NextAuth({
           if (dbUser) {
             // 등록된 사용자인 경우 실명과 탈퇴/관리자 상태 추가
             session.user.real_name = dbUser.real_name;
+            session.user.company_email = dbUser.company_email; // company_email 추가
             session.user.banned = dbUser.banned;
             // admin 필드가 없는 기존 사용자의 경우 기본값 false 처리
             session.user.admin = dbUser.admin ?? false;
