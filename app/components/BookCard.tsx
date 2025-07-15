@@ -4,6 +4,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import BookDetailsModal from "./BookDetailsModal";
+import ConfirmModal from "./ConfirmModal";
+import AlertModal from "./AlertModal";
 import {
   FaUser,
   FaIdCard,
@@ -33,94 +35,170 @@ export default function BookCard({
   const { data: session } = useSession();
   const router = useRouter();
   const [openDetailModal, setDetailModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info" as "success" | "error" | "info",
+  });
+
   const handleModal = () => {
     setDetailModal(!openDetailModal);
+  };
+
+  const showConfirm = (
+    title: string,
+    message: string,
+    onConfirm: () => void
+  ) => {
+    setConfirmModal({
+      isOpen: true,
+      title,
+      message,
+      onConfirm,
+    });
+  };
+
+  const showAlert = (
+    title: string,
+    message: string,
+    type: "success" | "error" | "info" = "info"
+  ) => {
+    setAlertModal({
+      isOpen: true,
+      title,
+      message,
+      type,
+    });
+  };
+
+  const closeConfirm = () => {
+    setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const closeAlert = () => {
+    setAlertModal((prev) => ({ ...prev, isOpen: false }));
   };
 
   const remainingDays = book.rental_info.expected_return_date
     ? RemainingDays(new Date(book.rental_info.expected_return_date))
     : null;
 
-  async function returnBook() {
-    if (confirm(`책 "${book.title}"을 반납하시겠습니까?`)) {
-      try {
-        const res = await fetch(`api/books/return/${book.manage_id}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            return_date: Date.now(),
-            user_name: session?.user?.real_name,
-            user_email: session?.user?.company_email || session?.user?.email,
-          }),
-        });
-        if (res.status === 200) {
-          alert("반납을 완료하였습니다");
-          onBookUpdate();
-        } else {
-          alert(
-            `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
+  function returnBook() {
+    showConfirm(
+      "도서 반납",
+      `책 "${book.title}"을 반납하시겠습니까?`,
+      async () => {
+        closeConfirm();
+        try {
+          const res = await fetch(`api/books/return/${book.manage_id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              return_date: Date.now(),
+              user_name: session?.user?.real_name,
+              user_email: session?.user?.company_email || session?.user?.email,
+            }),
+          });
+          if (res.status === 200) {
+            showAlert("반납 완료", "반납을 완료하였습니다", "success");
+            onBookUpdate();
+            router.push("/");
+          } else {
+            showAlert(
+              "오류 발생",
+              `에러가 발생했습니다. 관리자에게 문의하세요.\nERRROR CODE(${res.status})`,
+              "error"
+            );
+          }
+        } catch (err) {
+          showAlert(
+            "서버 오류",
+            "서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown",
+            "error"
           );
         }
-      } catch (err) {
-        alert("서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown");
-      } finally {
-        router.push("/");
       }
-    } else return;
+    );
   }
 
-  async function rentBook() {
-    if (confirm(`책 "${book.title}"을 대여하시겠습니까?`)) {
-      try {
-        const res = await fetch(`api/books/rent/${book.manage_id}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            rent_date: Date.now(),
-            user_name: session?.user?.real_name,
-            user_email: session?.user?.company_email || session?.user?.email,
-          }),
-        });
-        if (res.status === 200) {
-          alert("대여를 완료하였습니다");
-          onBookUpdate();
-        } else {
-          alert(
-            `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
+  function rentBook() {
+    showConfirm(
+      "도서 대여",
+      `책 "${book.title}"을 대여하시겠습니까?`,
+      async () => {
+        closeConfirm();
+        try {
+          const res = await fetch(`api/books/rent/${book.manage_id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              rent_date: Date.now(),
+              user_name: session?.user?.real_name,
+              user_email: session?.user?.company_email || session?.user?.email,
+            }),
+          });
+          if (res.status === 200) {
+            showAlert("대여 완료", "대여를 완료하였습니다", "success");
+            onBookUpdate();
+            router.push("/");
+          } else {
+            showAlert(
+              "오류 발생",
+              `에러가 발생했습니다. 관리자에게 문의하세요.\nERRROR CODE(${res.status})`,
+              "error"
+            );
+          }
+        } catch (err) {
+          showAlert(
+            "서버 오류",
+            "서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown",
+            "error"
           );
         }
-      } catch (err) {
-        alert("서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown");
-      } finally {
-        router.push("/");
       }
-    } else return;
+    );
   }
 
-  async function extendRent() {
-    if (confirm(`책 "${book.title}" 대여를 1주일 연장하시겠습니까?`)) {
-      try {
-        const res = await fetch(`api/books/rent/${book.manage_id}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            rent_date: book.rental_info.rent_date,
-            user_name: session?.user?.real_name,
-            user_email: session?.user?.company_email || session?.user?.email,
-            extend: true,
-          }),
-        });
-        if (res.status === 200) {
-          alert("대여 연장을 완료하였습니다");
-          onBookUpdate();
-        } else {
-          alert(
-            `에러가 발생했습니다. 관리자에게 문의하세요. \n ERRROR CODE(${res.status})`
+  function extendRent() {
+    showConfirm(
+      "대여 연장",
+      `책 "${book.title}" 대여를 1주일 연장하시겠습니까?`,
+      async () => {
+        closeConfirm();
+        try {
+          const res = await fetch(`api/books/rent/${book.manage_id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              rent_date: book.rental_info.rent_date,
+              user_name: session?.user?.real_name,
+              user_email: session?.user?.company_email || session?.user?.email,
+              extend: true,
+            }),
+          });
+          if (res.status === 200) {
+            showAlert("연장 완료", "대여 연장을 완료하였습니다", "success");
+            onBookUpdate();
+          } else {
+            showAlert(
+              "오류 발생",
+              `에러가 발생했습니다. 관리자에게 문의하세요.\nERRROR CODE(${res.status})`,
+              "error"
+            );
+          }
+        } catch (err) {
+          showAlert(
+            "서버 오류",
+            "서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown",
+            "error"
           );
         }
-      } catch (err) {
-        alert("서버에 문제가 있습니다. 관리자에게 문의하세요. ERROR Unknown");
-      } finally {
-        router.push("/");
       }
-    } else return;
+    );
   }
 
   // 상태에 따른 색상과 아이콘 결정
@@ -251,8 +329,10 @@ export default function BookCard({
               RemainingDays(AddDays(book.rental_info.return_date, 2)) >= 0 ? (
               <button
                 onClick={() =>
-                  alert(
-                    "반납하신 책은 '반납일 익일' 까지 다시 대여하실 수 없습니다"
+                  showAlert(
+                    "대여 불가",
+                    "반납하신 책은 '반납일 익일' 까지 다시 대여하실 수 없습니다",
+                    "info"
                   )
                 }
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-300 text-slate-500 text-xs rounded-lg font-medium cursor-not-allowed"
@@ -303,6 +383,23 @@ export default function BookCard({
           </div>
         </div>
       </div>
+
+      {/* New Modals */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={closeConfirm}
+      />
+
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        title={alertModal.title}
+        message={alertModal.message}
+        type={alertModal.type}
+        onClose={closeAlert}
+      />
     </div>
   );
 }
