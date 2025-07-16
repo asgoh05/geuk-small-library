@@ -51,13 +51,14 @@ const InfiniteScrollBooks = memo(function InfiniteScrollBooks({
       }
     );
 
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
+    const currentElement = observerRef.current;
+    if (currentElement) {
+      observer.observe(currentElement);
     }
 
     return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
+      if (currentElement) {
+        observer.unobserve(currentElement);
       }
     };
   }, [loadMoreItems, isLoading, visibleCount, books.length]);

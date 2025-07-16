@@ -52,39 +52,41 @@ export default function BookCard({
     setDetailModal(!openDetailModal);
   };
 
-  const showConfirm = (
-    title: string,
-    message: string,
-    onConfirm: () => void
-  ) => {
-    setConfirmModal({
-      isOpen: true,
-      title,
-      message,
-      onConfirm,
-    });
-  };
+  const showConfirm = useCallback(
+    (title: string, message: string, onConfirm: () => void) => {
+      setConfirmModal({
+        isOpen: true,
+        title,
+        message,
+        onConfirm,
+      });
+    },
+    []
+  );
 
-  const showAlert = (
-    title: string,
-    message: string,
-    type: "success" | "error" | "info" = "info"
-  ) => {
-    setAlertModal({
-      isOpen: true,
-      title,
-      message,
-      type,
-    });
-  };
+  const showAlert = useCallback(
+    (
+      title: string,
+      message: string,
+      type: "success" | "error" | "info" = "info"
+    ) => {
+      setAlertModal({
+        isOpen: true,
+        title,
+        message,
+        type,
+      });
+    },
+    []
+  );
 
-  const closeConfirm = () => {
+  const closeConfirm = useCallback(() => {
     setConfirmModal((prev) => ({ ...prev, isOpen: false }));
-  };
+  }, []);
 
-  const closeAlert = () => {
+  const closeAlert = useCallback(() => {
     setAlertModal((prev) => ({ ...prev, isOpen: false }));
-  };
+  }, []);
 
   // 계산 결과를 메모이제이션
   const remainingDays = useMemo(() => {
