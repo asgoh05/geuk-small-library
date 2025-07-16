@@ -4,13 +4,14 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 
-export default function RegisterPage() {
+export default function ProfilePage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [realName, setRealName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
 
@@ -52,12 +53,23 @@ export default function RegisterPage() {
     }
   }, [companyEmail]);
 
-  // 로그인하지 않은 사용자는 메인 페이지로 리다이렉트
+  // 로그인하지 않은 사용자 또는 등록되지 않은 사용자는 메인 페이지로 리다이렉트
   useEffect(() => {
     if (!session) {
       router.push("/");
+    } else if (session.user && !session.user.registered) {
+      router.push("/register");
     }
   }, [session, router]);
+
+  // 사용자 정보 로드
+  useEffect(() => {
+    if (session?.user && session.user.registered) {
+      setRealName(session.user.real_name || "");
+      setCompanyEmail(session.user.company_email || "");
+      setIsLoading(false);
+    }
+  }, [session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,42 +93,41 @@ export default function RegisterPage() {
     setMessage("");
 
     try {
-      const response = await fetch("/api/users/register", {
-        method: "POST",
+      const response = await fetch("/api/users/profile", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           real_name: realName.trim(),
-          email: session.user.email,
           company_email: companyEmail.trim(),
-          google_id: session.user.email, // 임시로 email을 google_id로 사용
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage("가입이 완료되었습니다! 도서관을 이용해주세요.");
+        setMessage("정보가 성공적으로 수정되었습니다!");
+        // 세션 정보 업데이트를 위해 페이지 새로고침
         setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
+          window.location.reload();
+        }, 1500);
       } else {
-        setMessage(data.message || "가입 중 오류가 발생했습니다.");
+        setMessage(data.message || "정보 수정 중 오류가 발생했습니다.");
       }
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Profile update error:", error);
       setMessage("네트워크 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (!session) {
+  if (!session || isLoading) {
     return (
       <div className="w-full min-h-screen bg-[url('/library_downloaded2.png')] bg-cover">
         <LoadingSpinner
-          message="세션을 확인하는 중..."
+          message="프로필 정보를 불러오는 중..."
           size="large"
           fullScreen={true}
           backdrop={true}
@@ -125,15 +136,19 @@ export default function RegisterPage() {
     );
   }
 
+  if (!session.user?.registered) {
+    return null; // useEffect에서 이미 리다이렉트 처리
+  }
+
   return (
     <div className="w-full min-h-screen bg-[url('/library_downloaded2.png')] bg-cover flex items-center justify-center">
       <div className="bg-white bg-opacity-95 rounded-lg p-8 max-w-md w-full mx-4 shadow-lg">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            GEUK 도서관 회원가입
+            내 정보 수정
           </h1>
           <p className="text-sm text-gray-600">
-            실명을 입력하여 가입을 완료해주세요
+            개인 정보를 수정할 수 있습니다
           </p>
         </div>
 
@@ -142,7 +157,7 @@ export default function RegisterPage() {
             <strong>Google 계정:</strong> {session.user?.email}
           </p>
           <p className="text-sm text-gray-700">
-            <strong>이름:</strong> {session.user?.name}
+            <strong>가입일:</strong> {session.user?.name}
           </p>
         </div>
 
@@ -208,7 +223,7 @@ export default function RegisterPage() {
             }
             className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "가입 중..." : "가입하기"}
+            {isSubmitting ? "수정 중..." : "정보 수정"}
           </button>
           <p className="mt-1 text-xs text-gray-500 italic">
             ℹ️ 이름과 이메일 주소가 실제와 다를 경우 임의로 탈퇴 처리 될 수
@@ -219,7 +234,7 @@ export default function RegisterPage() {
         {message && (
           <div
             className={`mt-4 p-3 rounded-md ${
-              message.includes("완료")
+              message.includes("성공")
                 ? "bg-green-100 text-green-700"
                 : "bg-red-100 text-red-700"
             }`}

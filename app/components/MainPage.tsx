@@ -247,6 +247,14 @@ export default function MainPage() {
 
             {/* 오른쪽: 관리자 링크와 로그인 */}
             <div className="flex justify-center items-center gap-4 flex-shrink-0">
+              {session?.user?.registered && (
+                <Link
+                  className="text-white text-xs px-3 py-2 rounded-lg border border-cyan-600 hover:bg-cyan-700 transition-colors duration-200"
+                  href={"/profile"}
+                >
+                  내 정보
+                </Link>
+              )}
               {session?.user?.admin && (
                 <Link
                   className="text-white text-xs px-3 py-2 rounded-lg border border-cyan-600 hover:bg-cyan-700 transition-colors duration-200"
@@ -320,6 +328,16 @@ export default function MainPage() {
                   <FaChartBar className="text-sm" />
                   대여 현황 보기
                 </button>
+
+                {session?.user?.registered && (
+                  <Link
+                    href="/profile"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-cyan-100 hover:bg-cyan-700 rounded-lg text-sm transition-colors duration-200"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <FaUser className="text-sm" />내 정보
+                  </Link>
+                )}
 
                 {session?.user?.admin && (
                   <Link
