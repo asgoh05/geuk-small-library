@@ -7,13 +7,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-center">
-      <AdminGuard>
-        <div className="h-screen w-screen p-14">
-          <AdminNav />
-          {children}
-        </div>
-      </AdminGuard>
-    </div>
+    <AdminGuard>
+      <div className="min-h-screen bg-gray-50">
+        <AdminNav />
+        <div className="px-6 py-8 max-w-7xl mx-auto">{children}</div>
+      </div>
+    </AdminGuard>
   );
 }

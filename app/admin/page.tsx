@@ -1,18 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   FaBook,
   FaUsers,
   FaExclamationTriangle,
   FaChartLine,
-  FaPlus,
-  FaFileExcel,
-  FaDownload,
   FaClock,
   FaCheckCircle,
   FaTimesCircle,
-  FaEnvelope,
 } from "react-icons/fa";
 
 interface DashboardStats {
@@ -34,52 +29,6 @@ export default function AdminPage() {
     bannedUsers: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [testEmailSending, setTestEmailSending] = useState(false);
-
-  // 테스트 이메일 발송 함수
-  const sendTestEmail = async () => {
-    if (testEmailSending) return;
-
-    if (
-      !confirm(
-        "Gmail SMTP 테스트 이메일을 발송하시겠습니까?\n\n로그인된 관리자의 회사 이메일로 발송됩니다."
-      )
-    ) {
-      return;
-    }
-
-    setTestEmailSending(true);
-
-    try {
-      console.log("테스트 이메일 발송 중...");
-      const response = await fetch("/api/admin/send-test-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "테스트 이메일 발송에 실패했습니다.");
-      }
-
-      // 성공 메시지
-      alert(
-        `테스트 이메일 발송 성공! 🎉\n\n${result.message}\n\n수신자: ${result.details.recipient}\n발송 시간: ${result.details.sent_at}`
-      );
-    } catch (error) {
-      console.error("테스트 이메일 발송 오류:", error);
-      alert(
-        `테스트 이메일 발송에 실패했습니다.\n\n오류: ${
-          (error as Error).message
-        }\n\nGMAIL_SETUP.md 파일을 참고하여 Gmail SMTP 설정을 확인해주세요.`
-      );
-    } finally {
-      setTestEmailSending(false);
-    }
-  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -117,59 +66,6 @@ export default function AdminPage() {
     fetchStats();
   }, []);
 
-  const quickActions = [
-    {
-      title: "도서 추가",
-      description: "새 도서를 개별 등록",
-      href: "/admin/addbook",
-      icon: <FaPlus className="text-xl" />,
-      color: "bg-green-500 hover:bg-green-600",
-      onClick: undefined,
-    },
-    {
-      title: "Excel 도서 추가",
-      description: "엑셀 파일로 일괄 등록",
-      href: "/admin/addbookExcel",
-      icon: <FaFileExcel className="text-xl" />,
-      color: "bg-emerald-500 hover:bg-emerald-600",
-      onClick: undefined,
-    },
-    {
-      title: "사용자 관리",
-      description: "사용자 권한 및 상태 관리",
-      href: "/admin/users",
-      icon: <FaUsers className="text-xl" />,
-      color: "bg-indigo-500 hover:bg-indigo-600",
-      onClick: undefined,
-    },
-    {
-      title: "데이터 내보내기",
-      description: "도서 목록 Excel 다운로드",
-      href: "/admin/export",
-      icon: <FaDownload className="text-xl" />,
-      color: "bg-purple-500 hover:bg-purple-600",
-      onClick: undefined,
-    },
-    {
-      title: "Gmail 테스트",
-      description: "SMTP 설정 테스트 이메일",
-      href: undefined,
-      icon: <FaEnvelope className="text-xl" />,
-      color: testEmailSending
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-blue-500 hover:bg-blue-600",
-      onClick: sendTestEmail,
-    },
-    {
-      title: "연체 알림 발송",
-      description: "연체된 도서 이메일 알림 관리",
-      href: "/admin/send-email",
-      icon: <FaEnvelope className="text-xl" />,
-      color: "bg-red-500 hover:bg-red-600",
-      onClick: undefined,
-    },
-  ];
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -183,7 +79,10 @@ export default function AdminPage() {
       {/* 환영 메시지 */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
         <h1 className="text-3xl font-bold mb-2">관리자 대시보드</h1>
-        <p className="text-blue-100">도서관 시스템을 효율적으로 관리하세요</p>
+        <p className="text-blue-100">
+          도서관 시스템을 효율적으로 관리하세요. 상단 네비게이션을 통해 필요한
+          기능에 빠르게 접근할 수 있습니다.
+        </p>
       </div>
 
       {/* 도서 관리 현황 */}
@@ -384,7 +283,9 @@ export default function AdminPage() {
                   <span className="font-semibold text-red-800">연체 알림</span>
                 </div>
                 <p className="text-sm text-red-700">
-                  현재 {stats.overdueBooks}권의 도서가 연체되었습니다.
+                  현재 {stats.overdueBooks}권의 도서가 연체되었습니다. 상단
+                  네비게이션의 &ldquo;연체 알림&rdquo;을 통해 이메일을 발송할 수
+                  있습니다.
                 </p>
               </div>
             ) : (
@@ -410,7 +311,8 @@ export default function AdminPage() {
                   </span>
                 </div>
                 <p className="text-sm text-orange-700">
-                  {stats.bannedUsers}명의 사용자가 차단되어 있습니다.
+                  {stats.bannedUsers}명의 사용자가 차단되어 있습니다. 상단
+                  네비게이션의 &ldquo;사용자 관리&rdquo;에서 확인할 수 있습니다.
                 </p>
               </div>
             )}
@@ -424,58 +326,18 @@ export default function AdminPage() {
                 도서관 시스템이 정상 운영 중입니다.
               </p>
             </div>
+
+            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-1">
+                <FaChartLine className="text-purple-500 text-sm" />
+                <span className="font-semibold text-purple-800">관리 기능</span>
+              </div>
+              <p className="text-sm text-purple-700">
+                상단 네비게이션에서 모든 관리 기능에 접근할 수 있습니다. 빠른
+                작업은 &ldquo;빠른 작업&rdquo; 드롭다운 메뉴를 확인하세요.
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* 빠른 작업 */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">빠른 작업</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-          {quickActions.map((action, index) => {
-            // 링크가 있는 경우
-            if (action.href) {
-              return (
-                <Link
-                  key={index}
-                  href={action.href}
-                  className={`${action.color} text-white p-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg`}
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-3">{action.icon}</div>
-                    <h3 className="font-semibold mb-1">{action.title}</h3>
-                    <p className="text-sm opacity-90">{action.description}</p>
-                  </div>
-                </Link>
-              );
-            }
-
-            // 클릭 함수가 있는 경우
-            return (
-              <button
-                key={index}
-                onClick={action.onClick}
-                disabled={testEmailSending}
-                className={`${action.color} text-white p-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg disabled:transform-none disabled:hover:scale-100`}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className="mb-3">
-                    {testEmailSending && action.title === "Gmail 테스트" ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    ) : (
-                      action.icon
-                    )}
-                  </div>
-                  <h3 className="font-semibold mb-1">
-                    {testEmailSending && action.title === "Gmail 테스트"
-                      ? "테스트 중..."
-                      : action.title}
-                  </h3>
-                  <p className="text-sm opacity-90">{action.description}</p>
-                </div>
-              </button>
-            );
-          })}
         </div>
       </div>
     </div>
