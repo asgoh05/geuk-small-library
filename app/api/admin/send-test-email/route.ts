@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { getServerSession } from "next-auth";
+import LibraryUser from "@/app/(models)/User";
 
 // Gmail SMTP 설정
 const createTransporter = () => {
@@ -110,6 +112,29 @@ export async function POST(req: NextRequest) {
   try {
     console.log("=== Gmail SMTP 테스트 이메일 발송 시작 ===");
 
+    // 로그인된 관리자의 이메일 조회
+    let testRecipientEmail = "sanggeon.oh@gehealthcare.com"; // 기본값
+    try {
+      const session = await getServerSession();
+      if (session?.user?.email) {
+        const adminUser = await LibraryUser.findOne({
+          email: session.user.email,
+        });
+        if (adminUser?.company_email) {
+          testRecipientEmail = adminUser.company_email;
+          console.log(
+            `테스트 발송 대상: ${testRecipientEmail} (로그인 관리자)`
+          );
+        } else {
+          console.log(
+            `관리자의 company_email이 없어 기본값 사용: ${testRecipientEmail}`
+          );
+        }
+      }
+    } catch (error) {
+      console.warn("관리자 이메일 조회 실패, 기본값 사용:", error);
+    }
+
     const transporter = createTransporter();
 
     // Gmail SMTP 연결 테스트
@@ -144,7 +169,7 @@ export async function POST(req: NextRequest) {
       from: `"GEUK 도서관 시스템" <${
         process.env.EMAIL_USER || "geuklibrary@gmail.com"
       }>`,
-      to: "sanggeon.oh@gehealthcare.com",
+      to: testRecipientEmail,
       subject: `[GEUK 도서관] Gmail SMTP 테스트 성공! - ${currentTime}`,
       html: testEmailHtml,
     };
@@ -161,7 +186,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message: "Gmail SMTP 테스트 이메일이 성공적으로 발송되었습니다! 📧",
       details: {
-        recipient: "sanggeon.oh@gehealthcare.com",
+        recipient: testRecipientEmail,
         sent_at: currentTime,
         smtp_server: "Gmail SMTP",
         from_account: process.env.EMAIL_USER || "geuklibrary@gmail.com",

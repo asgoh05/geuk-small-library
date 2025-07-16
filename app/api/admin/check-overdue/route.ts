@@ -36,18 +36,34 @@ export async function GET(req: NextRequest) {
             email: book.rental_info.user_email,
           });
 
-          if (!user) {
-            console.warn(
-              `사용자 정보를 찾을 수 없음: ${book.rental_info.user_email}`
-            );
-            return null;
-          }
-
           const expectedReturnDate = new Date(
             book.rental_info.expected_return_date
           );
           const overdueDays = Math.abs(RemainingDays(expectedReturnDate));
 
+          if (!user) {
+            // 미등록 사용자인 경우
+            console.warn(`미등록 사용자: ${book.rental_info.user_email}`);
+
+            return {
+              book: {
+                manage_id: book.manage_id,
+                title: book.title,
+                author: book.author,
+                rent_date: book.rental_info.rent_date,
+                expected_return_date: book.rental_info.expected_return_date,
+              },
+              user: {
+                real_name: "미등록 사용자",
+                email: book.rental_info.user_email,
+                company_email: null, // 미등록 사용자는 회사 이메일 없음
+                is_registered: false,
+              },
+              overdue_days: overdueDays,
+            };
+          }
+
+          // 등록된 사용자인 경우
           return {
             book: {
               manage_id: book.manage_id,
@@ -60,6 +76,7 @@ export async function GET(req: NextRequest) {
               real_name: user.real_name,
               email: user.email,
               company_email: user.company_email,
+              is_registered: true,
             },
             overdue_days: overdueDays,
           };
@@ -73,7 +90,7 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    // null 값 제거
+    // null 값 제거 (에러가 발생한 경우만 제거, 미등록 사용자는 포함)
     const validOverdueBooks = overdueWithUserInfo.filter(
       (item) => item !== null
     );

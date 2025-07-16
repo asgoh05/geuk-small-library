@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getDateString } from "@/app/(general)/datetime";
+import { getServerSession } from "next-auth";
+import LibraryUser from "@/app/(models)/User";
 
 // Gmail SMTP 설정
 const createTransporter = () => {
@@ -111,6 +113,31 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // 테스트 모드일 때 사용할 관리자 이메일 조회
+    let testRecipientEmail = "sanggeon.oh@gehealthcare.com"; // 기본값
+    if (testMode) {
+      try {
+        const session = await getServerSession();
+        if (session?.user?.email) {
+          const adminUser = await LibraryUser.findOne({
+            email: session.user.email,
+          });
+          if (adminUser?.company_email) {
+            testRecipientEmail = adminUser.company_email;
+            console.log(
+              `테스트 발송 대상: ${testRecipientEmail} (로그인 관리자)`
+            );
+          } else {
+            console.log(
+              `관리자의 company_email이 없어 기본값 사용: ${testRecipientEmail}`
+            );
+          }
+        }
+      } catch (error) {
+        console.warn("관리자 이메일 조회 실패, 기본값 사용:", error);
+      }
+    }
+
     const transporter = createTransporter();
 
     // 이메일 인증 테스트
@@ -141,10 +168,11 @@ export async function POST(req: NextRequest) {
       const { book, user, overdue_days } = item;
 
       try {
-        // 테스트 모드일 때는 지정된 이메일로만 발송
+        // 테스트 모드일 때는 로그인된 관리자의 이메일로 발송
+        // 운영 모드일 때는 company_email이 있으면 사용하고, 없으면 개인 이메일 사용
         const recipientEmail = testMode
-          ? "sanggeon.oh@gehealthcare.com"
-          : user.company_email;
+          ? testRecipientEmail
+          : user.company_email || user.email;
 
         const emailHtml = generateOverdueEmailHtml(book, user, overdue_days);
 

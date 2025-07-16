@@ -34,7 +34,6 @@ export default function AdminPage() {
     bannedUsers: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [emailSending, setEmailSending] = useState(false);
   const [testEmailSending, setTestEmailSending] = useState(false);
 
   // 테스트 이메일 발송 함수
@@ -43,7 +42,7 @@ export default function AdminPage() {
 
     if (
       !confirm(
-        "Gmail SMTP 테스트 이메일을 발송하시겠습니까?\n\nsanggeon.oh@gehealthcare.com 으로 발송됩니다."
+        "Gmail SMTP 테스트 이메일을 발송하시겠습니까?\n\n로그인된 관리자의 회사 이메일로 발송됩니다."
       )
     ) {
       return;
@@ -79,70 +78,6 @@ export default function AdminPage() {
       );
     } finally {
       setTestEmailSending(false);
-    }
-  };
-
-  // 연체 알림 이메일 발송 함수
-  const sendOverdueEmails = async () => {
-    if (emailSending) return;
-
-    if (
-      !confirm(
-        "연체 알림 이메일을 발송하시겠습니까?\n\n테스트 모드로 sanggeon.oh@gehealthcare.com 으로 발송됩니다."
-      )
-    ) {
-      return;
-    }
-
-    setEmailSending(true);
-
-    try {
-      // 1. 연체 도서 확인
-      console.log("연체 도서 확인 중...");
-      const overdueResponse = await fetch("/api/admin/check-overdue");
-      const overdueData = await overdueResponse.json();
-
-      if (!overdueResponse.ok) {
-        throw new Error(overdueData.error || "연체 도서 확인에 실패했습니다.");
-      }
-
-      if (overdueData.valid_overdue === 0) {
-        alert("연체된 도서가 없습니다.");
-        return;
-      }
-
-      console.log(`${overdueData.valid_overdue}건의 연체 도서 발견`);
-
-      // 2. 이메일 발송
-      console.log("이메일 발송 중...");
-      const emailResponse = await fetch("/api/admin/send-overdue-emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          overdueBooks: overdueData.overdue_books,
-          testMode: true, // 테스트 모드
-        }),
-      });
-
-      const emailResult = await emailResponse.json();
-
-      if (!emailResponse.ok) {
-        throw new Error(emailResult.error || "이메일 발송에 실패했습니다.");
-      }
-
-      // 성공 메시지
-      alert(
-        `연체 알림 발송 완료!\n\n총 ${emailResult.total}건\n성공: ${emailResult.success_count}건\n실패: ${emailResult.fail_count}건\n\n테스트 모드로 sanggeon.oh@gehealthcare.com 으로 발송되었습니다.`
-      );
-    } catch (error) {
-      console.error("연체 알림 발송 오류:", error);
-      alert(
-        `연체 알림 발송에 실패했습니다.\n\n오류: ${(error as Error).message}`
-      );
-    } finally {
-      setEmailSending(false);
     }
   };
 
@@ -227,13 +162,11 @@ export default function AdminPage() {
     },
     {
       title: "연체 알림 발송",
-      description: "연체된 도서 이메일 알림",
-      href: undefined,
+      description: "연체된 도서 이메일 알림 관리",
+      href: "/admin/send-email",
       icon: <FaEnvelope className="text-xl" />,
-      color: emailSending
-        ? "bg-gray-400 cursor-not-allowed"
-        : "bg-red-500 hover:bg-red-600",
-      onClick: sendOverdueEmails,
+      color: "bg-red-500 hover:bg-red-600",
+      onClick: undefined,
     },
   ];
 
@@ -522,22 +455,19 @@ export default function AdminPage() {
               <button
                 key={index}
                 onClick={action.onClick}
-                disabled={emailSending || testEmailSending}
+                disabled={testEmailSending}
                 className={`${action.color} text-white p-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg disabled:transform-none disabled:hover:scale-100`}
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="mb-3">
-                    {(emailSending && action.title === "연체 알림 발송") ||
-                    (testEmailSending && action.title === "Gmail 테스트") ? (
+                    {testEmailSending && action.title === "Gmail 테스트" ? (
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     ) : (
                       action.icon
                     )}
                   </div>
                   <h3 className="font-semibold mb-1">
-                    {emailSending && action.title === "연체 알림 발송"
-                      ? "발송 중..."
-                      : testEmailSending && action.title === "Gmail 테스트"
+                    {testEmailSending && action.title === "Gmail 테스트"
                       ? "테스트 중..."
                       : action.title}
                   </h3>
