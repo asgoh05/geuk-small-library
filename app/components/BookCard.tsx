@@ -2,7 +2,7 @@ import { IBook } from "../(models)/Book";
 import { AddDays, RemainingDays, SubstractDate } from "../(general)/datetime";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import BookDetailsModal from "./BookDetailsModal";
 import ConfirmModal from "./ConfirmModal";
 import AlertModal from "./AlertModal";
@@ -86,11 +86,14 @@ export default function BookCard({
     setAlertModal((prev) => ({ ...prev, isOpen: false }));
   };
 
-  const remainingDays = book.rental_info.expected_return_date
-    ? RemainingDays(new Date(book.rental_info.expected_return_date))
-    : null;
+  // 계산 결과를 메모이제이션
+  const remainingDays = useMemo(() => {
+    return book.rental_info.expected_return_date
+      ? RemainingDays(new Date(book.rental_info.expected_return_date))
+      : null;
+  }, [book.rental_info.expected_return_date]);
 
-  function returnBook() {
+  const returnBook = useCallback(() => {
     showConfirm(
       "도서 반납",
       `책 "${book.title}"을 반납하시겠습니까?`,
@@ -125,9 +128,20 @@ export default function BookCard({
         }
       }
     );
-  }
+  }, [
+    book.title,
+    book.manage_id,
+    session?.user?.real_name,
+    session?.user?.company_email,
+    session?.user?.email,
+    showConfirm,
+    showAlert,
+    closeConfirm,
+    onBookUpdate,
+    router,
+  ]);
 
-  function rentBook() {
+  const rentBook = useCallback(() => {
     showConfirm(
       "도서 대여",
       `책 "${book.title}"을 대여하시겠습니까?`,
@@ -162,9 +176,20 @@ export default function BookCard({
         }
       }
     );
-  }
+  }, [
+    book.title,
+    book.manage_id,
+    session?.user?.real_name,
+    session?.user?.company_email,
+    session?.user?.email,
+    showConfirm,
+    showAlert,
+    closeConfirm,
+    onBookUpdate,
+    router,
+  ]);
 
-  function extendRent() {
+  const extendRent = useCallback(() => {
     showConfirm(
       "대여 연장",
       `책 "${book.title}" 대여를 1주일 연장하시겠습니까?`,
@@ -199,10 +224,21 @@ export default function BookCard({
         }
       }
     );
-  }
+  }, [
+    book.title,
+    book.manage_id,
+    book.rental_info.rent_date,
+    session?.user?.real_name,
+    session?.user?.company_email,
+    session?.user?.email,
+    showConfirm,
+    showAlert,
+    closeConfirm,
+    onBookUpdate,
+  ]);
 
-  // 상태에 따른 색상과 아이콘 결정
-  const getStatusConfig = () => {
+  // 상태에 따른 색상과 아이콘 결정 - 메모이제이션
+  const statusConfig = useMemo(() => {
     if (book.rental_info.rent_available) {
       return {
         bgColor: "bg-gradient-to-r from-cyan-50 to-teal-50",
@@ -220,12 +256,10 @@ export default function BookCard({
         statusColor: "text-slate-600",
       };
     }
-  };
+  }, [book.rental_info.rent_available]);
 
-  const statusConfig = getStatusConfig();
-
-  // 반납 기한 상태
-  const getDueDateConfig = () => {
+  // 반납 기한 상태 - 메모이제이션
+  const dueDateConfig = useMemo(() => {
     if (!remainingDays || book.rental_info.rent_available) return null;
 
     if (remainingDays > 0) {
@@ -250,9 +284,7 @@ export default function BookCard({
         textColor: "text-rose-700",
       };
     }
-  };
-
-  const dueDateConfig = getDueDateConfig();
+  }, [remainingDays, book.rental_info.rent_available]);
 
   return (
     <div className="h-full">
@@ -384,22 +416,26 @@ export default function BookCard({
         </div>
       </div>
 
-      {/* New Modals */}
-      <ConfirmModal
-        isOpen={confirmModal.isOpen}
-        title={confirmModal.title}
-        message={confirmModal.message}
-        onConfirm={confirmModal.onConfirm}
-        onCancel={closeConfirm}
-      />
+      {/* New Modals - 조건부 렌더링으로 최적화 */}
+      {confirmModal.isOpen && (
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          title={confirmModal.title}
+          message={confirmModal.message}
+          onConfirm={confirmModal.onConfirm}
+          onCancel={closeConfirm}
+        />
+      )}
 
-      <AlertModal
-        isOpen={alertModal.isOpen}
-        title={alertModal.title}
-        message={alertModal.message}
-        type={alertModal.type}
-        onClose={closeAlert}
-      />
+      {alertModal.isOpen && (
+        <AlertModal
+          isOpen={alertModal.isOpen}
+          title={alertModal.title}
+          message={alertModal.message}
+          type={alertModal.type}
+          onClose={closeAlert}
+        />
+      )}
     </div>
   );
 }

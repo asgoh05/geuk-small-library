@@ -1,7 +1,7 @@
 "use client";
 import { IBook } from "../(models)/Book";
 import BookCard from "./BookCard";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, memo } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 
 interface InfiniteScrollBooksProps {
@@ -10,7 +10,7 @@ interface InfiniteScrollBooksProps {
   onBookUpdate: () => void;
 }
 
-export default function InfiniteScrollBooks({
+const InfiniteScrollBooks = memo(function InfiniteScrollBooks({
   books,
   userRentalBooks,
   onBookUpdate,
@@ -127,4 +127,6 @@ export default function InfiniteScrollBooks({
       )}
     </div>
   );
-}
+});
+
+export default InfiniteScrollBooks;

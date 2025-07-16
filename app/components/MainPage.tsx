@@ -14,8 +14,25 @@ import {
   FaBars,
   FaTimes,
 } from "react-icons/fa";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import BookIDInput from "./BookIDInput";
+
+// Debounce hook for search optimization
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export default function MainPage() {
   const { data: session } = useSession();
@@ -30,6 +47,10 @@ export default function MainPage() {
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
+
+  // Debounce search key for performance
+  const debouncedSearchKey = useDebounce(searchKey, 300);
+  const debouncedManageId = useDebounce(manageId, 300);
 
   // 검색창 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -74,36 +95,39 @@ export default function MainPage() {
     };
   }, []);
 
-  const handleSearchTypeChange = (type: "title" | "author") => {
+  const handleSearchTypeChange = useCallback((type: "title" | "author") => {
     setSearchType(type);
     setSearchKey("");
-  };
+  }, []);
 
-  const handleSearchKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKey(e.target.value);
-  };
+  const handleSearchKeyChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchKey(e.target.value);
+    },
+    []
+  );
 
-  const handleManageIdChange = (id: string) => {
+  const handleManageIdChange = useCallback((id: string) => {
     setManageId(id);
-  };
+  }, []);
 
-  const handleUserRentalCountUpdate = (count: number) => {
+  const handleUserRentalCountUpdate = useCallback((count: number) => {
     setUserRentalBooksCount(count);
-  };
+  }, []);
 
-  const closeMobileSearch = () => {
+  const closeMobileSearch = useCallback(() => {
     setShowMobileSearch(false);
-  };
+  }, []);
 
-  const toggleMyBooks = () => {
+  const toggleMyBooks = useCallback(() => {
     setShowMybook(!showMybook);
     setShowMobileMenu(false);
-  };
+  }, [showMybook]);
 
-  const openRentalModal = () => {
+  const openRentalModal = useCallback(() => {
     setOpenRentalInfoModal(true);
     setShowMobileMenu(false);
-  };
+  }, []);
 
   return (
     <div>
@@ -425,9 +449,9 @@ export default function MainPage() {
         {/* 메인 콘텐츠 */}
         <div className="flex flex-col overflow-auto h-4/5 w-full pt-16 lg:pt-16">
           <BookList
-            searchKey={searchKey}
+            searchKey={debouncedSearchKey}
             searchType={searchType}
-            manageId={manageId}
+            manageId={debouncedManageId}
             showMybook={showMybook}
             onUserRentalCountUpdate={handleUserRentalCountUpdate}
             onOpenRentalModal={() => setOpenRentalInfoModal(true)}
