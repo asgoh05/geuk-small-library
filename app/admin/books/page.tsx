@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import {
   FaBook,
   FaEdit,
@@ -205,9 +206,11 @@ export default function BookManagementPage({}: BookManagementPageProps) {
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
                       {book.img_url ? (
-                        <img
+                        <Image
                           src={book.img_url}
                           alt={book.title}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 object-cover rounded"
                         />
                       ) : (

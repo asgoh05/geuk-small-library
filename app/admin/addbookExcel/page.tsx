@@ -552,7 +552,7 @@ export default function AddBookExcelPage() {
           <div>
             <h4 className="font-medium mb-2">주의사항:</h4>
             <ul className="space-y-1">
-              <li>• 시트명: "GEUK 도서 리스트"</li>
+              <li>• 시트명: &quot;GEUK 도서 리스트&quot;</li>
               <li>• 파일 형식: .xlsx 또는 .xls</li>
               <li>• 도서번호는 중복될 수 없습니다</li>
               <li>• 날짜 형식: YYYY-MM-DD</li>

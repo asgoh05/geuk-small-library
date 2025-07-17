@@ -220,7 +220,7 @@ export default function SendEmailPage() {
     } finally {
       setSending(false);
     }
-  }, [selectedOverdueBooks, testMode]);
+  }, [selectedOverdueBooks, testMode, adminEmail]);
 
   // 날짜 포맷 함수
   const formatDate = useCallback((dateString: string) => {
