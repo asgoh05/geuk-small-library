@@ -17,12 +17,15 @@ const handler = NextAuth({
     async session({ session, token }) {
       if (session.user?.email) {
         try {
+          console.log(`=== 세션 콜백 시작: ${session.user.email} ===`);
+
           // 등록된 사용자인지 확인
           const dbUser = await LibraryUser.findOne({
             email: session.user.email,
           });
 
           if (dbUser) {
+            console.log(`등록된 사용자 발견: ${dbUser.real_name}`);
             // 등록된 사용자인 경우 실명과 탈퇴/관리자 상태 추가
             session.user.real_name = dbUser.real_name;
             session.user.company_email = dbUser.company_email; // company_email 추가
@@ -31,13 +34,19 @@ const handler = NextAuth({
             session.user.admin = dbUser.admin ?? false;
             session.user.registered = true;
           } else {
+            console.log(`등록되지 않은 사용자: ${session.user.email}`);
             // 등록되지 않은 사용자
             session.user.registered = false;
             session.user.banned = false;
             session.user.admin = false;
           }
+
+          console.log(
+            `세션 상태: registered=${session.user.registered}, banned=${session.user.banned}`
+          );
         } catch (error) {
-          console.error("Session callback error:", error);
+          console.error("=== 세션 콜백 에러 ===", error);
+          console.error("DB 연결 상태 확인 필요");
           session.user.registered = false;
           session.user.banned = false;
           session.user.admin = false;

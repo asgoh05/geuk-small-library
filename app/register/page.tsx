@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 export default function RegisterPage() {
-  const { data: session } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [realName, setRealName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
@@ -52,12 +52,26 @@ export default function RegisterPage() {
     }
   }, [companyEmail]);
 
-  // 로그인하지 않은 사용자는 메인 페이지로 리다이렉트
+  // 리다이렉트 로직 수정
   useEffect(() => {
-    if (!session) {
+    // 로딩 중이면 아무것도 하지 않음
+    if (status === "loading") return;
+
+    // 로그인하지 않은 사용자는 메인 페이지로 리다이렉트
+    if (status === "unauthenticated") {
       router.push("/");
+      return;
     }
-  }, [session, router]);
+
+    // 로그인했지만 이미 등록된 사용자는 메인 페이지로 리다이렉트
+    if (session?.user?.registered === true) {
+      router.push("/");
+      return;
+    }
+
+    // 로그인했지만 등록되지 않은 사용자는 여기에 머물기
+    // (session.user.registered === false 또는 undefined)
+  }, [session, status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,9 +112,31 @@ export default function RegisterPage() {
 
       if (response.ok) {
         setMessage("가입이 완료되었습니다! 도서관을 이용해주세요.");
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
+
+        // 세션 강제 업데이트
+        setTimeout(async () => {
+          try {
+            // 첫 번째 방법: NextAuth 세션 업데이트
+            await update();
+
+            // 잠시 대기 후 세션이 업데이트되었는지 확인
+            setTimeout(() => {
+              router.push("/");
+            }, 500);
+          } catch (error) {
+            console.error("Session update error:", error);
+
+            // 두 번째 방법: 로그아웃 후 재로그인으로 세션 새로고침
+            try {
+              await signOut({ redirect: false });
+              await signIn("google", { callbackUrl: "/" });
+            } catch (signInError) {
+              console.error("Re-signin error:", signInError);
+              // 마지막 방법: 강제 새로고침
+              window.location.href = "/";
+            }
+          }
+        }, 1500);
       } else {
         setMessage(data.message || "가입 중 오류가 발생했습니다.");
       }
@@ -112,7 +148,8 @@ export default function RegisterPage() {
     }
   };
 
-  if (!session) {
+  // 로딩 중이거나 세션이 없을 때 로딩 화면 표시
+  if (status === "loading" || !session) {
     return (
       <div className="w-full min-h-screen bg-[url('/library_downloaded2.png')] bg-cover">
         <LoadingSpinner

@@ -360,12 +360,13 @@ export default function AddBookExcelPage() {
               </label>
             </div>
 
-            {isLoading && uploadStep === "process" && (
+            {/* @ts-ignore */}
+            {isLoading && uploadStep === "process" ? (
               <div className="mt-6 flex items-center justify-center gap-2 text-emerald-600">
                 <FaSpinner className="animate-spin" />
                 <span>파일을 분석하는 중...</span>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       )}
