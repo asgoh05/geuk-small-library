@@ -3,6 +3,7 @@ import { PieChart } from "@mui/x-charts";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 import { RemainingDays } from "../(general)/datetime";
+import { FaTimes } from "react-icons/fa";
 
 interface IDatagridRow {
   id: String;
@@ -74,7 +75,16 @@ export default function RentalInfoModal({
 
   return (
     <div className="fixed top-0 left-0 w-full h-full backdrop-blur-xl flex justify-center items-center z-10">
-      <div className="fixed p-4 bg-white shadow-lg py-2 rounded-md">
+      <div className="relative p-4 bg-white shadow-lg py-2 rounded-md">
+        {/* 우측 상단 Close 버튼 */}
+        <button
+          type="button"
+          className="absolute top-20 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600 text-white transition-colors duration-200 shadow-sm z-10"
+          onClick={toggleModal}
+        >
+          <FaTimes className="text-sm" />
+        </button>
+
         <div className="text-sm font-medium text-gray-900 border-b border-gray-300 py-3 px-4 mb-4 flex justify-center">
           <p className="text-md">모든 대여정보</p>
         </div>
@@ -131,19 +141,12 @@ export default function RentalInfoModal({
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-300 flex justify-between items-center mt-2 px-4 pt-2">
+        <div className="border-t border-gray-300 flex justify-center items-center mt-2 px-4 pt-2">
           <div className="text-sm font-medium text-gray-700">
             <p className="text-center text-xs pt-6 text-neutral-400">
               &copy; Ultrasound Korea, GE Healthcare
             </p>
           </div>
-          <button
-            type="button"
-            className="h-8 px-2 text-sm rounded-md bg-gray-700 text-white"
-            onClick={toggleModal}
-          >
-            Close
-          </button>
         </div>
       </div>
     </div>

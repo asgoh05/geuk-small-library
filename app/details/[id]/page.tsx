@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import SignInButton from "@/app/components/SignInButton";
+import { FaTimes, FaExclamationTriangle } from "react-icons/fa";
 
 export default function BookDetailsPage({
   params,
@@ -30,7 +31,7 @@ export default function BookDetailsPage({
         <div className="flex w-screen px-8 justify-between items-center">
           <Link href="/" className="w-full text-xs">
             <p className="w-full text-xs">
-              {session?.user?.name}님, 환영합니다
+              {session?.user?.real_name}님, 환영합니다
             </p>
           </Link>
           <SignInButton />
@@ -69,7 +70,18 @@ export default function BookDetailsPage({
               <i>{book?.rental_info.user_name}</i>
             </p>
             <p className="text-xs text-center text-neutral-500">
-              <i>{book?.rental_info.user_email}</i>
+              <i className="flex items-center justify-center gap-1">
+                {book?.rental_info.user_email &&
+                  !book.rental_info.user_email.endsWith(
+                    "@gehealthcare.com"
+                  ) && (
+                    <FaExclamationTriangle
+                      className="text-amber-500"
+                      title="미등록 사용자"
+                    />
+                  )}
+                {book?.rental_info.user_email}
+              </i>
             </p>
             <div className="flex flex-row gap-2 items-end pt-4">
               <p className="text-xs">대여한 날짜 :</p>

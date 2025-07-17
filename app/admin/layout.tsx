@@ -1,5 +1,5 @@
 import AdminNav from "./components/AdminNav";
-import AdminPasswordWrap from "./components/AdminPasswordWrap";
+import AdminGuard from "./components/AdminGuard";
 
 export default function RootLayout({
   children,
@@ -7,13 +7,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-center">
-      <AdminPasswordWrap>
-        <div className="h-screen w-screen p-14">
-          <AdminNav />
-          {children}
-        </div>
-      </AdminPasswordWrap>
-    </div>
+    <AdminGuard>
+      <div className="min-h-screen bg-gray-50">
+        <AdminNav />
+        <div className="px-6 py-8 max-w-7xl mx-auto">{children}</div>
+      </div>
+    </AdminGuard>
   );
 }
