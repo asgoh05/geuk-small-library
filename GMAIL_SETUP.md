@@ -13,7 +13,7 @@
 1. **Google 계정 설정** 접속
 
    - [https://myaccount.google.com/](https://myaccount.google.com/) 방문
-   - `geuklibrary@gmail.com` 계정으로 로그인
+   - 도서관 Gmail 계정으로 로그인
 
 2. **2단계 인증 활성화**
 
@@ -34,7 +34,7 @@
 
 ```env
 # Gmail SMTP 설정
-EMAIL_USER=geuklibrary@gmail.com
+EMAIL_USER=your_gmail_account@gmail.com
 EMAIL_PASSWORD=your_16_digit_app_password_here
 
 # 기타 기존 환경 변수들...

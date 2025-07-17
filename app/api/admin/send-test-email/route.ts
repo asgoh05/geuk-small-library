@@ -8,7 +8,7 @@ const createTransporter = () => {
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER || "geuklibrary@gmail.com",
+      user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD, // Gmail App Password 필요
     },
     pool: true,
@@ -64,9 +64,7 @@ const generateTestEmailHtml = () => {
             <h3>🧪 테스트 정보</h3>
             <p><strong>발송 시간:</strong> ${currentTime}</p>
             <p><strong>발송 서버:</strong> Gmail SMTP (smtp.gmail.com)</p>
-            <p><strong>발송 계정:</strong> ${
-              process.env.EMAIL_USER || "geuklibrary@gmail.com"
-            }</p>
+            <p><strong>발송 계정:</strong> ${process.env.EMAIL_USER}</p>
             <p><strong>수신 이메일:</strong> sanggeon.oh@gehealthcare.com</p>
           </div>
           
@@ -166,9 +164,7 @@ export async function POST(req: NextRequest) {
     const currentTime = new Date().toLocaleString("ko-KR");
 
     const mailOptions = {
-      from: `"GEUK 도서관 시스템" <${
-        process.env.EMAIL_USER || "geuklibrary@gmail.com"
-      }>`,
+      from: `"GEUK 도서관 시스템" <${process.env.EMAIL_USER}>`,
       to: testRecipientEmail,
       subject: `[GEUK 도서관] Gmail SMTP 테스트 성공! - ${currentTime}`,
       html: testEmailHtml,
@@ -189,7 +185,7 @@ export async function POST(req: NextRequest) {
         recipient: testRecipientEmail,
         sent_at: currentTime,
         smtp_server: "Gmail SMTP",
-        from_account: process.env.EMAIL_USER || "geuklibrary@gmail.com",
+        from_account: process.env.EMAIL_USER,
       },
     });
   } catch (error) {

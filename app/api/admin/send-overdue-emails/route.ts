@@ -9,7 +9,7 @@ const createTransporter = () => {
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER || "geuklibrary@gmail.com",
+      user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD, // Gmail App Password 필요
     },
     pool: true,
@@ -177,9 +177,7 @@ export async function POST(req: NextRequest) {
         const emailHtml = generateOverdueEmailHtml(book, user, overdue_days);
 
         const mailOptions = {
-          from: `"GEUK 도서관" <${
-            process.env.EMAIL_USER || "geuklibrary@gmail.com"
-          }>`,
+          from: `"GEUK 도서관" <${process.env.EMAIL_USER}>`,
           to: recipientEmail,
           subject: `[GEUK 도서관] 도서 연체 알림 - ${book.title} (${overdue_days}일 연체)`,
           html: emailHtml,
