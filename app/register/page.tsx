@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 export default function RegisterPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const router = useRouter();
   const [realName, setRealName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
@@ -98,9 +98,31 @@ export default function RegisterPage() {
 
       if (response.ok) {
         setMessage("가입이 완료되었습니다! 도서관을 이용해주세요.");
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 2000);
+
+        // 세션 강제 업데이트
+        setTimeout(async () => {
+          try {
+            // 첫 번째 방법: NextAuth 세션 업데이트
+            await update();
+
+            // 잠시 대기 후 세션이 업데이트되었는지 확인
+            setTimeout(() => {
+              router.push("/");
+            }, 500);
+          } catch (error) {
+            console.error("Session update error:", error);
+
+            // 두 번째 방법: 로그아웃 후 재로그인으로 세션 새로고침
+            try {
+              await signOut({ redirect: false });
+              await signIn("google", { callbackUrl: "/" });
+            } catch (signInError) {
+              console.error("Re-signin error:", signInError);
+              // 마지막 방법: 강제 새로고침
+              window.location.href = "/";
+            }
+          }
+        }, 1500);
       } else {
         setMessage(data.message || "가입 중 오류가 발생했습니다.");
       }
