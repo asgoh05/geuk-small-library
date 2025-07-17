@@ -4,9 +4,20 @@ import { useSession } from "next-auth/react";
 import SignInButton from "@/app/components/SignInButton";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const handleRegisterClick = () => {
+    console.log("회원가입 버튼 클릭됨");
+    console.log("현재 세션 상태:", {
+      email: session?.user?.email,
+      registered: session?.user?.registered,
+    });
+    router.push("/register");
+  };
 
   // 로딩 중
   if (status === "loading") {
@@ -55,12 +66,12 @@ export default function Home() {
             <p className="text-gray-600 mb-6">
               GEUK 도서관을 이용하려면 먼저 회원가입을 완료해주세요.
             </p>
-            <Link
-              href="/register"
-              className="inline-block w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-center"
+            <button
+              onClick={handleRegisterClick}
+              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-center transition-colors duration-200"
             >
               회원가입하기
-            </Link>
+            </button>
           </div>
         </div>
       );

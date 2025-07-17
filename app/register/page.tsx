@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 export default function RegisterPage() {
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [realName, setRealName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
@@ -52,12 +52,26 @@ export default function RegisterPage() {
     }
   }, [companyEmail]);
 
-  // 로그인하지 않은 사용자는 메인 페이지로 리다이렉트
+  // 리다이렉트 로직 수정
   useEffect(() => {
-    if (!session) {
+    // 로딩 중이면 아무것도 하지 않음
+    if (status === "loading") return;
+
+    // 로그인하지 않은 사용자는 메인 페이지로 리다이렉트
+    if (status === "unauthenticated") {
       router.push("/");
+      return;
     }
-  }, [session, router]);
+
+    // 로그인했지만 이미 등록된 사용자는 메인 페이지로 리다이렉트
+    if (session?.user?.registered === true) {
+      router.push("/");
+      return;
+    }
+
+    // 로그인했지만 등록되지 않은 사용자는 여기에 머물기
+    // (session.user.registered === false 또는 undefined)
+  }, [session, status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +148,8 @@ export default function RegisterPage() {
     }
   };
 
-  if (!session) {
+  // 로딩 중이거나 세션이 없을 때 로딩 화면 표시
+  if (status === "loading" || !session) {
     return (
       <div className="w-full min-h-screen bg-[url('/library_downloaded2.png')] bg-cover">
         <LoadingSpinner
