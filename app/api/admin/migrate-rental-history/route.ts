@@ -23,15 +23,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("=== 대여 기록 이메일 마이그레이션 시작 ===");
-
     // 현재 대여 중인 모든 도서 조회
     const rentedBooks = await Book.find({
       "rental_info.rent_available": false,
       "rental_info.user_email": { $exists: true, $ne: "" },
     });
-
-    console.log(`대여 중인 도서 ${rentedBooks.length}권 확인`);
 
     let updatedCount = 0;
     let errors = [];
@@ -47,10 +43,6 @@ export async function POST(req: NextRequest) {
           // 회사 이메일이 있고 현재 이메일과 다른 경우 업데이트
           book.rental_info.user_email = user.company_email;
           await book.save();
-
-          console.log(
-            `업데이트: ${book.manage_id} - ${currentEmail} → ${user.company_email}`
-          );
           updatedCount++;
         }
       } catch (error) {
@@ -61,8 +53,6 @@ export async function POST(req: NextRequest) {
         });
       }
     }
-
-    console.log(`=== 마이그레이션 완료: ${updatedCount}건 업데이트 ===`);
 
     return NextResponse.json({
       success: true,

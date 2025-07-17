@@ -17,16 +17,11 @@ function validateCompanyEmail(email: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("=== 회원가입 API 시작 ===");
-
     const body = await req.json();
     const { real_name, email, company_email, google_id } = body;
 
-    console.log("받은 데이터:", { real_name, email, company_email, google_id });
-
     // 필수 필드 확인
     if (!real_name || !email || !company_email || !google_id) {
-      console.log("필수 필드 누락");
       return NextResponse.json(
         { message: "모든 필드를 입력해주세요." },
         { status: 400 }
@@ -35,7 +30,6 @@ export async function POST(req: NextRequest) {
 
     // 한글 실명 유효성 검사
     if (!validateKoreanName(real_name)) {
-      console.log("실명 유효성 검사 실패:", real_name);
       return NextResponse.json(
         { message: "실명은 한글 2-4글자로 입력해주세요." },
         { status: 400 }
@@ -44,14 +38,11 @@ export async function POST(req: NextRequest) {
 
     // 회사 이메일 유효성 검사
     if (!validateCompanyEmail(company_email)) {
-      console.log("회사 이메일 유효성 검사 실패:", company_email);
       return NextResponse.json(
         { message: "@gehealthcare.com 도메인의 이메일을 입력해주세요." },
         { status: 400 }
       );
     }
-
-    console.log("기존 사용자 확인 중...");
 
     // 이미 등록된 사용자인지 확인 (이메일 또는 Google ID로)
     const existingUser = await LibraryUser.findOne({
@@ -59,14 +50,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      console.log("이미 등록된 사용자:", existingUser.email);
       return NextResponse.json(
         { message: "이미 등록된 사용자입니다." },
         { status: 409 }
       );
     }
-
-    console.log("새 사용자 생성 중...");
 
     // 새 사용자 생성
     const newUser = await LibraryUser.create({
@@ -79,24 +67,14 @@ export async function POST(req: NextRequest) {
       admin: false, // 기본값은 일반 사용자
     });
 
-    console.log("사용자 생성 성공:", {
-      _id: newUser._id,
-      real_name: newUser.real_name,
-      email: newUser.email,
-      company_email: newUser.company_email,
-      banned: newUser.banned,
-      admin: newUser.admin,
-    });
-
     return NextResponse.json(
       {
-        message: "가입이 완료되었습니다! 도서관을 이용해주세요.",
+        message: "회원가입이 완료되었습니다!",
         user: {
           real_name: newUser.real_name,
           email: newUser.email,
           company_email: newUser.company_email,
-          banned: newUser.banned,
-          admin: newUser.admin,
+          registered_at: newUser.registered_at,
         },
       },
       { status: 201 }

@@ -48,9 +48,19 @@ export async function PUT(
       );
     }
 
+    // 반납 처리: 연체 목록에서 제거하면서 히스토리는 유지
     foundBook.rental_info.rent_available = true;
     foundBook.rental_info.return_date = rentalInfo.return_date;
-    foundBook.save();
+
+    // 연체 목록에서 완전히 제거 (expected_return_date만 null로 설정)
+    foundBook.rental_info.expected_return_date = null;
+
+    // 최근 사용자 히스토리는 유지 (상세 페이지에서 표시용)
+    // foundBook.rental_info.rent_date - 유지
+    // foundBook.rental_info.user_name - 유지
+    // foundBook.rental_info.user_email - 유지
+
+    await foundBook.save();
 
     return NextResponse.json(
       { message: `Success ${rentalInfo.user_name} returned book` },
