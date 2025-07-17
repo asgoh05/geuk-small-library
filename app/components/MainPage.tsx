@@ -124,10 +124,10 @@ export default function MainPage() {
     setShowMobileMenu(false);
   }, [showMybook]);
 
-  const openRentalModal = useCallback(() => {
-    setOpenRentalInfoModal(true);
+  const toggleRentalModal = useCallback(() => {
+    setOpenRentalInfoModal(!openRentalInfoModal);
     setShowMobileMenu(false);
-  }, []);
+  }, [openRentalInfoModal]);
 
   return (
     <div>
@@ -223,7 +223,7 @@ export default function MainPage() {
             {/* 중앙-오른쪽: 내 책 보기 & 대여 현황 버튼 */}
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 ${
+                className={`flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-medium transition-colors duration-200 ${
                   showMybook
                     ? "bg-cyan-600 text-white shadow-md"
                     : "bg-cyan-600/20 text-white hover:bg-cyan-600/40"
@@ -237,11 +237,11 @@ export default function MainPage() {
                 </span>
               </button>
               <button
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-600/80 hover:bg-slate-600 text-white rounded-lg text-xs font-medium transition-colors duration-200"
-                onClick={openRentalModal}
+                className="flex items-center gap-1.5 px-3 h-8 bg-slate-600/80 hover:bg-slate-600 text-white rounded-lg text-xs font-medium transition-colors duration-200"
+                onClick={toggleRentalModal}
               >
                 <FaChartBar className="text-xs" />
-                현황
+                대여 현황
               </button>
             </div>
 
@@ -322,11 +322,11 @@ export default function MainPage() {
                 </button>
 
                 <button
-                  onClick={openRentalModal}
+                  onClick={toggleRentalModal}
                   className="w-full flex items-center gap-3 px-3 py-2 text-cyan-100 hover:bg-cyan-700 rounded-lg text-sm transition-colors duration-200"
                 >
                   <FaChartBar className="text-sm" />
-                  대여 현황 보기
+                  대여 현황
                 </button>
 
                 {session?.user?.registered && (
