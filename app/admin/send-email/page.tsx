@@ -123,16 +123,21 @@ export default function SendEmailPage() {
     loadAdminEmail();
   }, [loadOverdueBooks, loadAdminEmail]);
 
+  // 연체가 오래된 순으로 정렬된 배열
+  const sortedOverdueBooks = useMemo(() => {
+    return [...overdueBooks].sort((a, b) => b.overdue_days - a.overdue_days);
+  }, [overdueBooks]);
+
   // 전체 선택/해제
   const handleSelectAll = useCallback(
     (checked: boolean) => {
       if (checked) {
-        setSelectedItems(new Set(overdueBooks.map((_, index) => index)));
+        setSelectedItems(new Set(sortedOverdueBooks.map((_, index) => index)));
       } else {
         setSelectedItems(new Set());
       }
     },
-    [overdueBooks]
+    [sortedOverdueBooks]
   );
 
   // 개별 선택/해제
@@ -148,22 +153,25 @@ export default function SendEmailPage() {
     });
   }, []);
 
-  // 선택된 항목들
+  // 선택된 항목들 (정렬된 배열 기준)
   const selectedOverdueBooks = useMemo(() => {
-    return overdueBooks.filter((_, index) => selectedItems.has(index));
-  }, [overdueBooks, selectedItems]);
+    return sortedOverdueBooks.filter((_, index) => selectedItems.has(index));
+  }, [sortedOverdueBooks, selectedItems]);
 
   // 전체 선택 상태
   const isAllSelected = useMemo(() => {
     return (
-      overdueBooks.length > 0 && selectedItems.size === overdueBooks.length
+      sortedOverdueBooks.length > 0 &&
+      selectedItems.size === sortedOverdueBooks.length
     );
-  }, [overdueBooks.length, selectedItems.size]);
+  }, [sortedOverdueBooks.length, selectedItems.size]);
 
   // 일부 선택 상태
   const isPartiallySelected = useMemo(() => {
-    return selectedItems.size > 0 && selectedItems.size < overdueBooks.length;
-  }, [overdueBooks.length, selectedItems.size]);
+    return (
+      selectedItems.size > 0 && selectedItems.size < sortedOverdueBooks.length
+    );
+  }, [sortedOverdueBooks.length, selectedItems.size]);
 
   // 이메일 발송
   const handleSendEmails = useCallback(async () => {
@@ -306,7 +314,8 @@ export default function SendEmailPage() {
                     </label>
                   </div>
                   <div className="text-sm text-gray-500">
-                    총 {overdueBooks.length}건 중 {selectedItems.size}건 선택됨
+                    총 {sortedOverdueBooks.length}건 중 {selectedItems.size}건
+                    선택됨
                   </div>
                 </div>
               </div>
@@ -316,7 +325,7 @@ export default function SendEmailPage() {
                 <div className="px-6 py-3 border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-gray-900">
-                      연체 도서 목록 ({overdueBooks.length}건)
+                      연체 도서 목록 ({sortedOverdueBooks.length}건)
                     </h2>
                     <div className="flex items-center space-x-3">
                       <label className="flex items-center">
@@ -359,7 +368,7 @@ export default function SendEmailPage() {
                   </div>
                 </div>
 
-                {overdueBooks.length === 0 ? (
+                {sortedOverdueBooks.length === 0 ? (
                   <div className="p-12 text-center">
                     <div className="text-green-600 text-4xl mb-4">🎉</div>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -384,7 +393,7 @@ export default function SendEmailPage() {
 
                     {/* 테이블 내용 */}
                     <div className="divide-y divide-gray-200">
-                      {overdueBooks.map((item, index) => (
+                      {sortedOverdueBooks.map((item, index) => (
                         <div
                           key={index}
                           className={`px-6 py-3 hover:bg-gray-50 transition-colors ${
