@@ -55,29 +55,16 @@ export default function ProfilePage() {
 
   // 로그인하지 않은 사용자 또는 등록되지 않은 사용자는 메인 페이지로 리다이렉트
   useEffect(() => {
-    console.log("=== 프로필 페이지 리다이렉트 체크 ===");
-    console.log("session 존재:", !!session);
-    console.log("session 전체:", session);
-    console.log("session.user 존재:", !!session?.user);
-    console.log("session.user.registered:", session?.user?.registered);
-    console.log("session status:", status);
-
     // 세션이 아직 로딩 중이면 기다림
     if (status === "loading") {
-      console.log("⏳ 세션 로딩 중... 대기");
       return;
     }
 
     if (!session) {
-      console.log("❌ 세션이 없어서 메인 페이지로 리다이렉트");
       router.push("/");
     } else if (session.user && !session.user.registered) {
-      console.log("❌ 등록되지 않은 사용자여서 회원가입 페이지로 리다이렉트");
       router.push("/register");
-    } else {
-      console.log("✅ 조건 통과 - 프로필 페이지 유지");
     }
-    console.log("=====================================");
   }, [session, router, status]);
 
   // 사용자 정보 로드

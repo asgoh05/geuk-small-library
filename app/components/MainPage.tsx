@@ -48,23 +48,6 @@ export default function MainPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
-  // 디버깅용 - 배포 환경에서 세션 상태 확인
-  useEffect(() => {
-    if (session) {
-      console.log("=== 클라이언트 세션 상태 ===");
-      console.log("전체 세션:", session);
-      console.log("사용자 정보:", session.user);
-      console.log("registered:", session.user?.registered);
-      console.log("real_name:", session.user?.real_name);
-      console.log("admin:", session.user?.admin);
-      console.log("banned:", session.user?.banned);
-      console.log("내정보 버튼 표시 조건:", session?.user?.registered);
-      console.log("===========================");
-    } else {
-      console.log("세션이 없음");
-    }
-  }, [session]);
-
   // Debounce search key for performance
   const debouncedSearchKey = useDebounce(searchKey, 300);
   const debouncedManageId = useDebounce(manageId, 300);
