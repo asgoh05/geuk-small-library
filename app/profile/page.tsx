@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [realName, setRealName] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
@@ -55,12 +55,30 @@ export default function ProfilePage() {
 
   // 로그인하지 않은 사용자 또는 등록되지 않은 사용자는 메인 페이지로 리다이렉트
   useEffect(() => {
+    console.log("=== 프로필 페이지 리다이렉트 체크 ===");
+    console.log("session 존재:", !!session);
+    console.log("session 전체:", session);
+    console.log("session.user 존재:", !!session?.user);
+    console.log("session.user.registered:", session?.user?.registered);
+    console.log("session status:", status);
+
+    // 세션이 아직 로딩 중이면 기다림
+    if (status === "loading") {
+      console.log("⏳ 세션 로딩 중... 대기");
+      return;
+    }
+
     if (!session) {
+      console.log("❌ 세션이 없어서 메인 페이지로 리다이렉트");
       router.push("/");
     } else if (session.user && !session.user.registered) {
+      console.log("❌ 등록되지 않은 사용자여서 회원가입 페이지로 리다이렉트");
       router.push("/register");
+    } else {
+      console.log("✅ 조건 통과 - 프로필 페이지 유지");
     }
-  }, [session, router]);
+    console.log("=====================================");
+  }, [session, router, status]);
 
   // 사용자 정보 로드
   useEffect(() => {
@@ -123,7 +141,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (!session || isLoading) {
+  if (status === "loading" || isLoading) {
     return (
       <div className="w-full min-h-screen bg-[url('/library_downloaded2.png')] bg-cover">
         <LoadingSpinner
@@ -136,7 +154,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (!session.user?.registered) {
+  if (!session || !session.user?.registered) {
     return null; // useEffect에서 이미 리다이렉트 처리
   }
 
