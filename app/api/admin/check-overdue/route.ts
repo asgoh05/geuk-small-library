@@ -8,16 +8,23 @@ export async function GET(req: NextRequest) {
   try {
     console.log("=== 연체 도서 확인 시작 ===");
 
-    // 대여중인 도서들 조회 (rent_available이 false인 도서들)
+    // 대여중인 도서들 조회 (rent_available이 false이고, expected_return_date가 존재하는 도서들)
+    // 반납된 도서는 자동으로 제외됨 (rent_available이 true이므로)
     const rentedBooks = await Book.find({
       "rental_info.rent_available": false,
       "rental_info.expected_return_date": { $exists: true, $ne: null },
-    });
+    }).populate("rental_info");
 
     console.log(`대여중인 도서 ${rentedBooks.length}권 확인`);
 
-    // 연체된 도서들 필터링
+    // 연체된 도서들 필터링 (가상 필드 활용)
     const overdueBooks = rentedBooks.filter((book) => {
+      // 가상 필드가 있으면 사용, 없으면 기존 로직 사용
+      if (book.isOverdue !== undefined) {
+        return book.isOverdue;
+      }
+
+      // 기존 로직 (가상 필드가 없는 경우)
       const expectedReturnDate = new Date(
         book.rental_info.expected_return_date
       );
@@ -52,6 +59,7 @@ export async function GET(req: NextRequest) {
                 author: book.author,
                 rent_date: book.rental_info.rent_date,
                 expected_return_date: book.rental_info.expected_return_date,
+                return_date: book.rental_info.return_date, // 반납일 추가
               },
               user: {
                 real_name: "미등록 사용자",
@@ -71,6 +79,7 @@ export async function GET(req: NextRequest) {
               author: book.author,
               rent_date: book.rental_info.rent_date,
               expected_return_date: book.rental_info.expected_return_date,
+              return_date: book.rental_info.return_date, // 반납일 추가
             },
             user: {
               real_name: user.real_name,
@@ -97,11 +106,24 @@ export async function GET(req: NextRequest) {
 
     console.log(`연체 알림 대상: ${validOverdueBooks.length}건`);
 
-    return NextResponse.json({
-      success: true,
+    // 디버깅을 위한 추가 정보
+    const debugInfo = {
       total_rented: rentedBooks.length,
       total_overdue: overdueBooks.length,
       valid_overdue: validOverdueBooks.length,
+      sample_books: rentedBooks.slice(0, 3).map((book) => ({
+        manage_id: book.manage_id,
+        title: book.title,
+        rent_available: book.rental_info.rent_available,
+        expected_return_date: book.rental_info.expected_return_date,
+        return_date: book.rental_info.return_date,
+        isOverdue: book.isOverdue,
+      })),
+    };
+
+    return NextResponse.json({
+      success: true,
+      ...debugInfo,
       overdue_books: validOverdueBooks,
     });
   } catch (error) {

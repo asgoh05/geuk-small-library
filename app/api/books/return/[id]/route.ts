@@ -3,14 +3,14 @@ import Book from "@/app/(models)/Book";
 import LibraryUser from "@/app/(models)/User";
 
 type RentalInfo = {
-  return_date: String;
-  user_name: String;
-  user_email: String;
+  return_date: string | number; // Date.now() 또는 ISO 문자열 모두 허용
+  user_name: string;
+  user_email: string;
 };
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: String } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const foundBook = await Book.findOne({ manage_id: params.id });
@@ -48,11 +48,34 @@ export async function PUT(
       );
     }
 
+    // return_date를 안전하게 Date 객체로 변환
+    let returnDate: Date;
+    try {
+      if (typeof rentalInfo.return_date === "number") {
+        // Date.now()로 전달된 경우
+        returnDate = new Date(rentalInfo.return_date);
+      } else if (typeof rentalInfo.return_date === "string") {
+        // ISO 문자열로 전달된 경우
+        returnDate = new Date(rentalInfo.return_date);
+      } else {
+        // 기본값으로 현재 시간 사용
+        returnDate = new Date();
+      }
+
+      // 유효한 날짜인지 확인
+      if (isNaN(returnDate.getTime())) {
+        throw new Error("Invalid date");
+      }
+    } catch (error) {
+      console.warn("return_date 파싱 실패, 현재 시간 사용:", error);
+      returnDate = new Date();
+    }
+
     // 반납 처리: 연체 목록에서 제거하면서 히스토리는 유지
     foundBook.rental_info.rent_available = true;
-    foundBook.rental_info.return_date = rentalInfo.return_date;
+    foundBook.rental_info.return_date = returnDate;
 
-    // 연체 목록에서 완전히 제거 (expected_return_date만 null로 설정)
+    // 연체 목록에서 완전히 제거 (expected_return_date를 null로 설정)
     foundBook.rental_info.expected_return_date = null;
 
     // 최근 사용자 히스토리는 유지 (상세 페이지에서 표시용)
@@ -62,8 +85,17 @@ export async function PUT(
 
     await foundBook.save();
 
+    console.log(
+      `도서 반납 완료: ${foundBook.manage_id} (${
+        foundBook.title
+      }) - 반납일: ${returnDate.toISOString()}`
+    );
+
     return NextResponse.json(
-      { message: `Success ${rentalInfo.user_name} returned book` },
+      {
+        message: `Success ${rentalInfo.user_name} returned book`,
+        return_date: returnDate.toISOString(),
+      },
       { status: 200 }
     );
   } catch (err) {
