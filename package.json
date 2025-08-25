@@ -24,7 +24,7 @@
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.1",
     "mongoose": "^8.3.2",
-    "next": "13.4.9",
+    "next": "14.2.1",
     "next-auth": "^4.24.7",
     "node-cron": "^4.2.1",
     "nodemailer": "^6.10.1",
@@ -38,6 +38,6 @@
     "write-excel-file": "^1.4.30"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^4.36.1"
+    "@netlify/plugin-nextjs": "^5.12.1"
   }
 }

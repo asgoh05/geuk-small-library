@@ -13,18 +13,17 @@ export async function GET(req: NextRequest) {
     const rentedBooks = await Book.find({
       "rental_info.rent_available": false,
       "rental_info.expected_return_date": { $exists: true, $ne: null },
-    }).populate("rental_info");
+    });
 
     console.log(`대여중인 도서 ${rentedBooks.length}권 확인`);
 
-    // 연체된 도서들 필터링 (가상 필드 활용)
-    const overdueBooks = rentedBooks.filter((book) => {
-      // 가상 필드가 있으면 사용, 없으면 기존 로직 사용
-      if (book.isOverdue !== undefined) {
-        return book.isOverdue;
+    // 연체된 도서들 필터링
+    const overdueBooks = rentedBooks.filter((book: any) => {
+      // expected_return_date가 존재하고, 현재 날짜보다 과거인 경우 연체
+      if (!book.rental_info?.expected_return_date) {
+        return false;
       }
 
-      // 기존 로직 (가상 필드가 없는 경우)
       const expectedReturnDate = new Date(
         book.rental_info.expected_return_date
       );
@@ -36,7 +35,7 @@ export async function GET(req: NextRequest) {
 
     // 연체된 도서와 사용자 정보 매핑
     const overdueWithUserInfo = await Promise.all(
-      overdueBooks.map(async (book) => {
+      overdueBooks.map(async (book: any) => {
         try {
           // Google 계정 이메일로 사용자 정보 조회
           const user = await LibraryUser.findOne({
@@ -111,13 +110,12 @@ export async function GET(req: NextRequest) {
       total_rented: rentedBooks.length,
       total_overdue: overdueBooks.length,
       valid_overdue: validOverdueBooks.length,
-      sample_books: rentedBooks.slice(0, 3).map((book) => ({
+      sample_books: rentedBooks.slice(0, 3).map((book: any) => ({
         manage_id: book.manage_id,
         title: book.title,
-        rent_available: book.rental_info.rent_available,
-        expected_return_date: book.rental_info.expected_return_date,
-        return_date: book.rental_info.return_date,
-        isOverdue: book.isOverdue,
+        rent_available: book.rental_info?.rent_available,
+        expected_return_date: book.rental_info?.expected_return_date,
+        return_date: book.rental_info?.return_date,
       })),
     };
 

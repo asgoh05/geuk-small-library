@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
-export interface IBook extends mongoose.Document {
+export interface IBook {
+  _id?: string;
   manage_id: string;
   title: string;
   author: string;
@@ -15,6 +16,8 @@ export interface IBook extends mongoose.Document {
     user_name: string;
     user_email: string;
   };
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IBookInternal {
@@ -59,34 +62,8 @@ const bookSchema = new Schema(
   },
   {
     timestamps: true, // createdAt, updatedAt 자동 추가
-    // 가상 필드 추가 (대여 상태 확인용)
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
   }
 );
-
-// 가상 필드: 대여 상태 확인
-bookSchema.virtual("isRented").get(function () {
-  return !this.rental_info.rent_available;
-});
-
-// 가상 필드: 연체 상태 확인
-bookSchema.virtual("isOverdue").get(function () {
-  if (
-    !this.rental_info.expected_return_date ||
-    this.rental_info.rent_available
-  ) {
-    return false;
-  }
-  return new Date() > this.rental_info.expected_return_date;
-});
-
-// 가상 필드: 반납 완료 상태 확인
-bookSchema.virtual("isReturned").get(function () {
-  return (
-    this.rental_info.rent_available && this.rental_info.return_date !== null
-  );
-});
 
 const Book = mongoose.models.Book || mongoose.model("Book", bookSchema);
 export default Book;

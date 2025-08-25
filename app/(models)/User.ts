@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
-export interface IUser extends mongoose.Document {
+export interface IUser {
+  _id?: string;
   real_name: string; // 실명 (한글)
   email: string;
   company_email: string; // 회사 이메일 (@gehealthcare.com)
